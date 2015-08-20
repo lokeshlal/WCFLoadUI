@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>DContainer.Prism</id>
+    <version>1.0.11</version>
+    <title>DContainer.Prism</title>
+    <authors>Zork</authors>
+    <owners>Zork</owners>
+    <projectUrl>http://dcontainer.codeplex.com/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Prism Integration for DContainer</description>
+    <copyright>Copyright 2012 @Zork</copyright>
+    <tags>DI IoC Container Prism WPF</tags>
+    <dependencies>
+      <dependency id="DContainer" version="1.0.11" />
+      <dependency id="Prism" version="4.1.0.0" />
+    </dependencies>
+  </metadata>
+</package>

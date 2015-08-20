@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Prism.Mvvm</id>
+    <version>1.1.1</version>
+    <title>Prism.Mvvm</title>
+    <authors>Microsoft patterns &amp; practices</authors>
+    <owners>Microsoft patterns &amp; practices</owners>
+    <licenseUrl>https://pnpmvvm.codeplex.com/license</licenseUrl>
+    <projectUrl>https://pnpmvvm.codeplex.com/</projectUrl>
+    <iconUrl>http://www.gravatar.com/avatar/7db4eb02e62dfb5df5067169d12d9672?s=128&amp;r=g&amp;d=retro</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Prism.Mvvm provides support for building XAML application using the Model-View-ViewModel pattern.</description>
+    <summary>Prism.Mvvm libraries.</summary>
+    <releaseNotes>This release includes a Portable Class Library version of the Prism MVVM that targets Windows 8, .NET Framework 4.5 and higher, and Windows Phone 8.1</releaseNotes>
+    <language />
+  </metadata>
+</package>
