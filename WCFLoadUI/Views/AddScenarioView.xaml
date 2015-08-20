@@ -1,0 +1,51 @@
+﻿<Window x:Class="WCFLoadUI.Views.AddScenarioView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300"
+      Title="{Binding WindowTitle}"
+      Width="1300" Height="800"
+      WindowStartupLocation="CenterScreen"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:cal="http://www.caliburnproject.org"
+        ResizeMode="NoResize" 
+        ShowInTaskbar="False"
+        cal:Message.Attach="[Event Closing] = [Action OnClose($eventArgs)]">
+    <Grid>
+        <Button x:Name="AddScenario" Content="Add Scenario" HorizontalAlignment="Left" Margin="45,40,0,0" VerticalAlignment="Top" Width="95" Height="40"/>
+        <Button x:Name="DeleteScenario" Content="Delete Scenario" HorizontalAlignment="Left" Margin="151,40,0,0" VerticalAlignment="Top" Width="95" Height="40"/>
+        <ListView x:Name="ListViewScenarios" HorizontalAlignment="Left" Height="565" Margin="45,150,0,0" VerticalAlignment="Top" Width="160"
+                  SelectedItem="{Binding DoubleClickSelectedScenarioName, Mode=TwoWay}"
+                  ItemsSource="{Binding Scenarios, Mode=TwoWay}" >
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <cal:ActionMessage MethodName="ScenarioSelected"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </ListView>
+        <ListView x:Name="LstViewAvailableMethods" HorizontalAlignment="Left" Height="565" Margin="210,150,0,0" VerticalAlignment="Top" Width="455"
+                  SelectedItem="{Binding SelectedAvailableMethodName, Mode=TwoWay}"
+                  ItemsSource="{Binding AvailableMethods, Mode=TwoWay}"
+                  DisplayMemberPath="DisplayName" />
+        <TextBlock HorizontalAlignment="Left" Margin="210,110,0,0" TextWrapping="Wrap" Text="Available Methods" VerticalAlignment="Top" Height="40" Width="255" FontSize="16"/>
+        <ListView x:Name="LstViewSelectedMethods" HorizontalAlignment="Left" Height="565" Margin="725,150,0,0" VerticalAlignment="Top" Width="450"
+                  SelectedItem="{Binding SelectedSelectedMethodName, Mode=TwoWay}"
+                  SelectedIndex="{Binding SelectedSelectedMethodIndex, Mode=TwoWay}"
+                  ItemsSource="{Binding SelectedMethods, Mode=TwoWay}"
+                  DisplayMemberPath="DisplayName" />
+        <TextBlock HorizontalAlignment="Left" Margin="725,110,0,0" TextWrapping="Wrap" Text="Selected Methods" VerticalAlignment="Top" Height="40" Width="255" FontSize="16"/>
+        <Button x:Name="AddToSelected" Content="&gt;&gt;" HorizontalAlignment="Left" Margin="670,159,0,0" VerticalAlignment="Top" Width="50" Height="30" FontSize="16"/>
+        <Button x:Name="RemoveFromSelected" Content="&lt;&lt;" HorizontalAlignment="Left" Margin="670,194,0,0" VerticalAlignment="Top" Width="50" Height="30" FontSize="16"/>
+        <Button x:Name="MoveSelectedUp" Content="Move Up" HorizontalAlignment="Left" Margin="1195,159,0,0" VerticalAlignment="Top" Width="82" Height="30"/>
+        <Button x:Name="MoveSelectedDown" Content="Move Down" HorizontalAlignment="Left" Margin="1195,215,0,0" VerticalAlignment="Top" Width="82" Height="30" RenderTransformOrigin="0.647,2.033"/>
+        <Button x:Name="SaveScenarios" Content="Ok" HorizontalAlignment="Left" Margin="1182,32,0,0" VerticalAlignment="Top" Width="95" Height="40" RenderTransformOrigin="-2.895,0.375"/>
+        <Button x:Name="CancelScenarios" Visibility="Hidden" Content="Cancel" HorizontalAlignment="Left" Margin="1080,40,0,0" VerticalAlignment="Top" Width="95" Height="40" RenderTransformOrigin="-0.895,0.375"/>
+        <TextBox HorizontalAlignment="Left" 
+                 Text="{Binding IntervalBetweenScenarios, Mode=TwoWay}"
+                 Height="40" Margin="1055,32,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBlock HorizontalAlignment="Left" Margin="848,32,0,0" TextWrapping="Wrap" Text="Interval Between Scenarios" VerticalAlignment="Top" Height="40" Width="195" FontSize="16" TextAlignment="Center"/>
+
+    </Grid>
+</Window>

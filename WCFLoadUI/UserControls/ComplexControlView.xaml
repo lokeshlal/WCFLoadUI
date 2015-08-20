@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="WCFLoadUI.UserControls.ComplexControlView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+            xmlns:uc="clr-namespace:WCFLoadUI.UserControls"
+             mc:Ignorable="d"
+             xmlns:ts="clr-namespace:WCFLoadUI.TemplateSelectors">
+    <UserControl.Resources>
+        <DataTemplate x:Key="PrimitiveTemplate">
+            <uc:PrimitiveControlView DataContext="{Binding Path=PControlView,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </DataTemplate>
+        <DataTemplate x:Key="ComplexTemplate">
+            <uc:ComplexControlView DataContext="{Binding Path=CControlView,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </DataTemplate>
+        <DataTemplate x:Key="ListTemplate">
+            <uc:ListControlView DataContext="{Binding Path=LControlView,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </DataTemplate>
+    </UserControl.Resources>
+    <DockPanel Margin="10,0,0,0">
+        <TextBlock Text="{Binding FieldName}" Height="22" DockPanel.Dock="Top" />
+        <DataGrid 
+            AutoGenerateColumns="False" 
+            CanUserAddRows="False"
+            HeadersVisibility="None"
+            HorizontalAlignment="Left"
+            Margin="0,0,0,0" 
+            ItemsSource="{Binding Properties, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn >
+                    <DataGridTemplateColumn.CellTemplateSelector>
+                        <ts:TypeTemplateSelector
+                            PrimitiveTemplate="{StaticResource PrimitiveTemplate}"
+                            ComplexTemplate="{StaticResource ComplexTemplate}"
+                            ListTemplate="{StaticResource ListTemplate}"/>
+                    </DataGridTemplateColumn.CellTemplateSelector>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <!--<DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+                <uc:PrimitiveControlView DataContext="{Binding Path=.,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></uc:PrimitiveControlView>
+            </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>-->
+    </DockPanel>
+</UserControl>

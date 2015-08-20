@@ -1,0 +1,191 @@
+﻿<Window x:Class="WCFLoadUI.Views.RestApiView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        mc:Ignorable="d" 
+        Title="RestApiView" Height="800" Width="1300"
+        WindowStartupLocation="CenterScreen"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:cal="http://www.caliburnproject.org"
+        xmlns:converters="clr-namespace:WCFLoadUI.Converters"
+        ResizeMode="NoResize">
+    <Window.Resources>
+        <converters:BooleanVisibilityValueConverter x:Key="BoolToVisible" />
+        <converters:EnumMatchToBooleanConverter x:Key="EnumMatchToBoolean" />
+    </Window.Resources>
+    <Grid>
+        <ListView x:Name="ServiceMethodsList" 
+                  SelectedItem="{Binding DoubleClickSelectedRestMethod, Mode=TwoWay}"
+                  ItemsSource="{Binding Path=RestMethodList, Mode=TwoWay}"
+                  DisplayMemberPath="DisplayName"
+                  Width="350" HorizontalAlignment="Left" Margin="0,10" BorderThickness="1,1,1,1"
+                 >
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <cal:ActionMessage MethodName="MethodSelected"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </ListView>
+        <ScrollViewer Margin="395,0,0,0" CanContentScroll="True" VerticalAlignment="Top" Height="705" x:Name="MyScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <StackPanel CanVerticallyScroll="True" CanHorizontallyScroll="True"  HorizontalAlignment="Left" Height="705" Margin="0,10,0,0" VerticalAlignment="Top" Width="929">
+                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="885">
+                    <TextBlock Text="Rest API  Url:" FontSize="16" Padding="5,0,0,5"/>
+                    <TextBox Text="{Binding Path=SelectedRestMethod.Url, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Width="700" Height="40" BorderBrush="Black" Margin="5,0,0,20"  BorderThickness="1,1,1,1" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="885">
+                    <Grid Margin="5,0,0,20">
+                        <TextBlock Text="Content Type:" FontSize="16" Width="100" HorizontalAlignment="Left" />
+                        <ComboBox  HorizontalAlignment="Left" Margin="105,0,0,0"
+                            SelectedItem="{Binding SelectedContentItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  ItemsSource="{Binding Names}"
+                                  Width="350" FontSize="16" />
+                    </Grid>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="885">
+                    <TextBlock Text="Request Type:" FontSize="16" Padding="5,0,0,5"/>
+                    <Grid Margin="5,0,0,20">
+                        <RadioButton IsChecked="{Binding Path=SelectedRestMethod.Type, Converter={StaticResource EnumMatchToBoolean}, ConverterParameter=Get}" Content="Get" Width="125" HorizontalAlignment="Left" FontSize="16" GroupName="RadioRequestType">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <cal:ActionMessage MethodName="RadioChecked">
+                                        <cal:Parameter Value="$eventArgs" />
+                                    </cal:ActionMessage>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </RadioButton>
+                        <RadioButton IsChecked="{Binding Path=SelectedRestMethod.Type, Converter={StaticResource EnumMatchToBoolean}, ConverterParameter=Post}" Content="Post" Width="125" HorizontalAlignment="Left" Margin="125,0,0,0" FontSize="16" GroupName="RadioRequestType">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <cal:ActionMessage MethodName="RadioChecked">
+                                        <cal:Parameter Value="$eventArgs" />
+                                    </cal:ActionMessage>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </RadioButton>
+                        <RadioButton IsChecked="{Binding Path=SelectedRestMethod.Type, Converter={StaticResource EnumMatchToBoolean}, ConverterParameter=Delete}" Content="Delete" Width="125" HorizontalAlignment="Left" Margin="250,0,0,0" FontSize="16" GroupName="RadioRequestType">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <cal:ActionMessage MethodName="RadioChecked">
+                                        <cal:Parameter Value="$eventArgs" />
+                                    </cal:ActionMessage>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </RadioButton>
+
+                        <RadioButton IsChecked="{Binding Path=SelectedRestMethod.Type, Converter={StaticResource EnumMatchToBoolean}, ConverterParameter=Put}" Content="Put" Width="125" HorizontalAlignment="Left" Margin="375,0,0,0" FontSize="16" GroupName="RadioRequestType">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <cal:ActionMessage MethodName="RadioChecked">
+                                        <cal:Parameter Value="$eventArgs" />
+                                    </cal:ActionMessage>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </RadioButton>
+
+                        <RadioButton IsChecked="{Binding Path=SelectedRestMethod.Type, Converter={StaticResource EnumMatchToBoolean}, ConverterParameter=Patch}" Content="Patch" Width="125" HorizontalAlignment="Left" Margin="500,0,0,0" FontSize="16" GroupName="RadioRequestType">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <cal:ActionMessage MethodName="RadioChecked">
+                                        <cal:Parameter Value="$eventArgs" />
+                                    </cal:ActionMessage>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </RadioButton>
+
+                        <RadioButton IsChecked="{Binding Path=SelectedRestMethod.Type, Converter={StaticResource EnumMatchToBoolean}, ConverterParameter=Head}" Content="Head" Width="125" HorizontalAlignment="Left" Margin="625,0,0,0" FontSize="16" GroupName="RadioRequestType">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <cal:ActionMessage MethodName="RadioChecked">
+                                        <cal:Parameter Value="$eventArgs" />
+                                    </cal:ActionMessage>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </RadioButton>
+
+                        <RadioButton IsChecked="{Binding Path=SelectedRestMethod.Type, Converter={StaticResource EnumMatchToBoolean}, ConverterParameter=Options}" Content="Options" Width="125" HorizontalAlignment="Left" Margin="750,0,0,0" FontSize="16" GroupName="RadioRequestType">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <cal:ActionMessage MethodName="RadioChecked">
+                                        <cal:Parameter Value="$eventArgs" />
+                                    </cal:ActionMessage>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </RadioButton>
+
+                    </Grid>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="885">
+                    <TextBlock Text="Headers:" FontSize="16" Padding="5,0,0,5"/>
+                    <TabControl SelectedIndex="{Binding Path=SelectedRestMethod.SelectedHeaderTab, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <TabItem Header="Form">
+                            <StackPanel>
+                                <Button x:Name="AddNewHeader" Content="Add New header" FontSize="16" HorizontalAlignment="Left" Margin="5,0,0,5" />
+                                <StackPanel>
+                                    <DataGrid Height="150" AutoGenerateColumns="False" ColumnWidth="300" RowHeight="30" FontSize="16" ItemsSource="{Binding Path=SelectedRestMethod.Headers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Key" Binding="{Binding Key, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            <DataGridTextColumn Header="Value" Binding="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            <DataGridTemplateColumn Header="Delete" Width="100">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Content="Delete" cal:Message.Attach="DeleteFromHeaderList($dataContext)" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </StackPanel>
+                            </StackPanel>
+                        </TabItem>
+                        <TabItem Header="Raw">
+                            <StackPanel>
+                                <Grid Margin="5,0,0,20" x:Name="HeaderRaw">
+                                    <TextBox Margin="0" Text="{Binding Path=SelectedRestMethod.HeaderText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" x:Name="HeaderRawText" BorderThickness="1,1,1,1" BorderBrush="Black" Width="880" Height="150" />
+                                </Grid>
+                            </StackPanel>
+                        </TabItem>
+                    </TabControl>
+                </StackPanel>
+                <StackPanel Visibility="{Binding IsPayloadVisible, Converter={StaticResource BoolToVisible}}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="885">
+                    <TextBlock Text="Payload:" FontSize="16" Padding="5,0,0,5"/>
+                    <TabControl SelectedIndex="{Binding Path=SelectedRestMethod.SelectedPayloadTab, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <TabItem Header="Form">
+                            <StackPanel>
+                                <Button x:Name="AddNewValue" Content="Add New value" FontSize="16" HorizontalAlignment="Left" Margin="5,0,0,5" />
+                                <StackPanel>
+                                    <DataGrid Height="150" AutoGenerateColumns="False" ColumnWidth="300" RowHeight="30" FontSize="16" ItemsSource="{Binding Path=SelectedRestMethod.PayloadValues, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Key" Binding="{Binding Key, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            <DataGridTextColumn Header="Value" Binding="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            <DataGridTemplateColumn Header="Delete" Width="100">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Content="Delete" cal:Message.Attach="DeleteFromPayloadList($dataContext)" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+
+                                    </DataGrid>
+                                </StackPanel>
+                            </StackPanel>
+                        </TabItem>
+                        <TabItem Header="Raw">
+                            <StackPanel>
+                                <Grid Margin="5,0,0,20" x:Name="PayloadRaw">
+                                    <TextBox Margin="0" Text="{Binding Path=SelectedRestMethod.PayloadText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" x:Name="PayloadRawText" BorderThickness="1,1,1,1" BorderBrush="Black" Width="880" Height="150" />
+                                </Grid>
+                            </StackPanel>
+                        </TabItem>
+                    </TabControl>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+        <Button x:Name="TestRestApi" IsEnabled="{Binding IsExisting}" Height="40" Content="Test" Width="70" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="390, 0, 0, 5" />
+
+        <Button x:Name="DeletePayload" IsEnabled="{Binding IsExisting}" Height="40" Content="Delete" Width="70" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,160,5" />
+        <Button x:Name="SavePayload" IsEnabled="{Binding IsNew}" Height="40" Content="Save" Width="70" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,85,5" />
+        <Button x:Name="CancelPayload" Height="40" Content="Cancel" Width="70" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,10,5" />
+    </Grid>
+</Window>

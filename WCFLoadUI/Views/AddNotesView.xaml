@@ -1,0 +1,27 @@
+﻿<Window x:Class="WCFLoadUI.Views.AddNotesView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300"
+      Title="{Binding WindowTitle}"
+      Width="450" Height="600"
+      WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize" 
+        >
+    <Grid>
+
+        <ListView x:Name="ServiceMethodsList" 
+                  SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
+                  ItemsSource="{Binding Nodes}" 
+                  Width="230" HorizontalAlignment="Left" Margin="10,38,0,0" BorderThickness="1,1,1,1" />
+        <Button x:Name="AddNode" Content="Add" HorizontalAlignment="Left" Margin="395,38,0,0" VerticalAlignment="Top" Width="41" Height="35"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,17,0,0" TextWrapping="Wrap" Text="Node List" VerticalAlignment="Top" RenderTransformOrigin="-0.4,-0.312"/>
+        <Button x:Name="RemoveNode" Content="Remove Selected Node" HorizontalAlignment="Left" Margin="245,78,0,0" VerticalAlignment="Top" Width="145" Height="42"/>
+        <TextBox Text="{Binding NewNode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="35" Margin="245,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="145" FontSize="14" ToolTip="Enter Node Name"/>
+        <TextBlock HorizontalAlignment="Left" Margin="245,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Number of clients per node"/>
+        <TextBox HorizontalAlignment="Left" Height="34" Margin="245,146,0,0" TextWrapping="Wrap" Text="{Binding NoOfClientsPerNode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="145" FontSize="14" ToolTip="Enter number of clients to run on each node"/>
+
+    </Grid>
+</Window>

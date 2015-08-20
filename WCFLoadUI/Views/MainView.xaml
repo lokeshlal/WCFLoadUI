@@ -1,0 +1,167 @@
+﻿<Window x:Class="WCFLoadUI.Views.MainView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300"
+      Title="{Binding WindowTitle}"
+      Width="1300" Height="800"
+      WindowStartupLocation="CenterScreen"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:cal="http://www.caliburnproject.org"
+        xmlns:uc="clr-namespace:WCFLoadUI.UserControls"
+        xmlns:ts="clr-namespace:WCFLoadUI.TemplateSelectors"
+        xmlns:converters="clr-namespace:WCFLoadUI.Converters"
+        ResizeMode="NoResize">
+    <Window.Resources>
+        <converters:BooleanVisibilityValueConverter x:Key="BoolToVisible" />
+        <converters:TestConverter x:Key="Test" />
+        <DataTemplate x:Key="PrimitiveTemplate">
+            <uc:PrimitiveControlView DataContext="{Binding Path=PControlView,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </DataTemplate>
+        <DataTemplate x:Key="ComplexTemplate">
+            <uc:ComplexControlView DataContext="{Binding Path=CControlView,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </DataTemplate>
+        <DataTemplate x:Key="ListTemplate">
+            <uc:ListControlView DataContext="{Binding Path=LControlView,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </DataTemplate>
+        <DataTemplate x:Key="DictionaryTemplate">
+            <uc:DictionaryControlView DataContext="{Binding Path=DControlView,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </DataTemplate>
+    </Window.Resources>
+    <Grid>
+        <Rectangle Visibility="{Binding IsValueGridPopulated, Converter={StaticResource BoolToVisible}}" Fill="#FFF4F4F5" 
+                   HorizontalAlignment="Left" Height="84" Margin="595,660,0,12" Stroke="Black" VerticalAlignment="Top" Width="290"/>
+        <TextBlock Visibility="{Binding IsValueGridPopulated, Converter={StaticResource BoolToVisible}}" 
+                   HorizontalAlignment="Left" Margin="603,670,0,12" VerticalAlignment="Top" Width="250" Text="Special Values"/>
+        <Menu Height="38" VerticalAlignment="Top">
+            <MenuItem x:Name="FileMenu" Header="File" FontSize="20">
+                <MenuItem x:Name="MenuNew" Header="New" HorizontalAlignment="Left" Width="251" />
+                <MenuItem x:Name="MenuOpen" Header="Open" HorizontalAlignment="Left" Width="251" />
+                <MenuItem x:Name="MenuExit" Header="Exit" HorizontalAlignment="Left" Width="251" />
+            </MenuItem>
+            <MenuItem x:Name="AddMenu" Header="Add" FontSize="20">
+                <MenuItem x:Name="MenuAddService" IsEnabled="{Binding IsTestLoadedOrStarted}" Header="Service" HorizontalAlignment="Left" Width="251" />
+                <MenuItem x:Name="MenuAddRestUrl" IsEnabled="{Binding IsTestLoadedOrStarted}" Header="Rest Urls" HorizontalAlignment="Left" Width="251" />
+                <MenuItem x:Name="MenuAddFunctional" IsEnabled="{Binding IsTestLoadedOrStarted}" Header="Functional Test" HorizontalAlignment="Left" Width="251" />
+                <MenuItem x:Name="MenuAddScenario" IsEnabled="{Binding IsTestLoadedOrStarted}" Header="Scenarios" HorizontalAlignment="Left" Width="251" />
+                <MenuItem x:Name="MenuAddNodes" IsEnabled="{Binding IsTestLoadedOrStarted}" Header="Nodes" HorizontalAlignment="Left" Width="251" />
+            </MenuItem>
+
+            <MenuItem x:Name="RunMenu" Header="Run" FontSize="20">
+                <MenuItem x:Name="MenuRunPerformance" IsEnabled="{Binding CanRunPerfTest}" Header="Performance Test" HorizontalAlignment="Left" Width="251" />
+                <MenuItem x:Name="MenuRunFunctional" IsEnabled="{Binding CanRunPerfTest}" Header="Functional Test" HorizontalAlignment="Left" Width="251" />
+            </MenuItem>
+        </Menu>
+
+        <!--262-->
+        <ComboBox Width="262" Margin="0,38,0,0" Height="40" HorizontalAlignment="Left" VerticalAlignment="Top"
+                  ItemsSource="{Binding ServiceUrlList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  SelectedItem="{Binding ServiceUrlSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  >
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <cal:ActionMessage MethodName="ServiceChanged" />
+                </i:EventTrigger>    
+            </i:Interaction.Triggers>
+        </ComboBox>
+        <Button Visibility="Hidden" x:Name="RemoveService" Margin="205,38,0,0" Width="57" Height="40" Content="Remove" HorizontalAlignment="Left" VerticalAlignment="Top"></Button>
+        <ListView x:Name="ServiceMethodsList" 
+                  SelectedItem="{Binding DoubleClickSelectedMethodName, Mode=TwoWay}"
+                  ItemsSource="{Binding ServiceMethods}" 
+                  Width="262" HorizontalAlignment="Left" Margin="0,80,0,0" BorderThickness="1,1,1,1"
+                 >
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <cal:ActionMessage MethodName="MethodSelected"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </ListView>
+
+        <DataGrid 
+            AutoGenerateColumns="False" 
+            CanUserAddRows="False"
+            Width="800"  
+            Height="584"
+            Margin="267,38,0,140" 
+            HorizontalAlignment="Left"
+            SelectedItem="{Binding SelectedControlViewBindingObject, Mode=TwoWay}"
+            ItemsSource="{Binding ControlViewBindingObject, Converter={StaticResource Test}}"
+            ScrollViewer.CanContentScroll="False"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            ScrollViewer.HorizontalScrollBarVisibility="Auto">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn >
+                    <DataGridTemplateColumn.CellTemplateSelector>
+                        <ts:TypeTemplateSelector
+                            PrimitiveTemplate="{StaticResource PrimitiveTemplate}"
+                            ComplexTemplate="{StaticResource ComplexTemplate}"
+                            ListTemplate="{StaticResource ListTemplate}"
+                            DictionaryTemplate="{StaticResource DictionaryTemplate}"
+                            />
+                    </DataGridTemplateColumn.CellTemplateSelector>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <ListView x:Name="ServiceMethodValuesList" 
+                  SelectedItem="{Binding DoubleClickSelectedMethodValueName, Mode=TwoWay}"
+                  ItemsSource="{Binding ServiceMethodValues, Mode=TwoWay}" 
+                  Width="197" HorizontalAlignment="Right" Margin="0,48,10,440" BorderThickness="1,1,1,1"
+                 >
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <cal:ActionMessage MethodName="ValueSelected"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </ListView>
+
+        <Grid Width="197" HorizontalAlignment="Right" VerticalAlignment="Center" Height="425" Margin="0,335,10,10">
+            <DockPanel VerticalAlignment="Top" Height="35">
+                <TextBlock x:Name="LblNoOfClients" Text="Clients:" HorizontalAlignment="Left" Width="70" FontSize="16" TextAlignment="Left" VerticalAlignment="Center"/>
+                <TextBox x:Name="TxtNoOfClients" Text="{Binding NoOfClients, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Right" RenderTransformOrigin="-9.3,0.5" Width="80" FontSize="16" TextAlignment="Left" VerticalAlignment="Center"/>
+            </DockPanel>
+            <DockPanel VerticalAlignment="Top" Margin="0,40,0,0">
+                <TextBlock Text="Duration:" HorizontalAlignment="Left" Width="70" FontSize="16" TextAlignment="Left" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding Duration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Right" RenderTransformOrigin="-9.3,0.5" Width="80" FontSize="16" TextAlignment="Left" VerticalAlignment="Center"/>
+            </DockPanel>
+            <DockPanel VerticalAlignment="Top" Margin="0,80,0,0">
+                <TextBlock Text="Interval Range B/W Calls:" HorizontalAlignment="Left" Width="190" FontSize="16" TextAlignment="Left" VerticalAlignment="Center"/>
+            </DockPanel>
+            <DockPanel VerticalAlignment="Top" Margin="0,120,0,0">
+                <TextBox Text="{Binding DelayRangeStart, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Left" RenderTransformOrigin="-9.3,0.5" Width="80" FontSize="16" TextAlignment="Left" VerticalAlignment="Center"/>
+                <TextBlock Text=" - " HorizontalAlignment="Center" Width="30" FontSize="16" TextAlignment="Center" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding DelayRangeEnd, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Right" RenderTransformOrigin="-9.3,0.5" Width="80" FontSize="16" TextAlignment="Left" VerticalAlignment="Center"/>
+            </DockPanel>
+            <DockPanel VerticalAlignment="Top" Margin="0,160,0,0">
+                <TextBlock Text="Binding To Test:" HorizontalAlignment="Left" Width="190" FontSize="16" TextAlignment="Left" VerticalAlignment="Center"/>
+            </DockPanel>
+            <DockPanel VerticalAlignment="Top" Margin="0,200,0,0">
+                <ComboBox SelectedItem="{Binding SelectedBinding, Mode=TwoWay}" ItemsSource="{Binding Bindings, Mode=TwoWay}" />
+
+            </DockPanel>
+            <DockPanel VerticalAlignment="Top" Margin="0,240,0,0">
+                <TextBlock Text="Result file Path:" HorizontalAlignment="Left" Width="190" FontSize="16" TextAlignment="Left" VerticalAlignment="Center"/>
+            </DockPanel>
+            <DockPanel VerticalAlignment="Top" Margin="0,280,0,0">
+                <TextBox Text="{Binding ResultFilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Left" RenderTransformOrigin="-9.3,0.5" Width="190" FontSize="16" TextAlignment="Left" VerticalAlignment="Center"/>
+            </DockPanel>
+            <DockPanel VerticalAlignment="Top" Margin="0,320,0,0">
+                <Button x:Name="SavePerfTest" Width="190" Height="38" IsEnabled="{Binding IsTestLoadedOrStarted}" 
+                    RenderTransformOrigin="0.46,-6.2" Content="Save Test"/>
+            </DockPanel>
+        </Grid>
+
+        <Button x:Name="SaveValues" Width="90" Height="45" IsEnabled="{Binding IsValueGridPopulated}" 
+                    HorizontalAlignment="Right" VerticalAlignment="Bottom" DockPanel.Dock="Right" Margin="0,0,900,20" RenderTransformOrigin="0.46,-6.2" Content="Save Values"/>
+        <Button x:Name="ResetValues" Width="90" Height="45" IsEnabled="{Binding IsValueGridPopulated}" 
+        	HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,800,20" RenderTransformOrigin="0.46,-6.2" Content="Reset Values"/>
+        <Button x:Name="DeleteValues" IsEnabled="{Binding CanDisplayDeleteValues}" Width="90" Height="45"
+        	HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,700,20" RenderTransformOrigin="0.46,-6.2" Content="Delete Values"/>
+        <ComboBox SelectedItem="{Binding SelectedSpecialValue, Mode=TwoWay}" ItemsSource="{Binding SpecialValueList}" 
+                  IsEnabled="{Binding IsValueGridPopulated}"
+                  Margin="603,705,545,25" RenderTransformOrigin="0.46,-6.2"/>
+        <Button x:Name="AddSelectedValue" Width="90" Height="45" IsEnabled="{Binding IsValueGridPopulated}"
+        	HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="30,0,420,25" RenderTransformOrigin="0.46,-6.2" Content="Copy Value" ToolTip="Copy value and click on grid cell to paste"/>
+    </Grid>
+</Window>

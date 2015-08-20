@@ -1,0 +1,57 @@
+﻿<Window x:Class="WCFLoadUI.Views.RunningTestView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300"
+      Title="{Binding WindowTitle}"
+      Width="1300" Height="800"
+      WindowStartupLocation="CenterScreen"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:cal="http://www.caliburnproject.org"
+        xmlns:converters="clr-namespace:WCFLoadUI.Converters"
+        ResizeMode="NoResize" 
+        ShowInTaskbar="False"
+        xmlns:dvc="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"     
+    >
+    <Window.Resources>
+        <converters:BooleanVisibilityValueConverter x:Key="BoolToVisible" />
+    </Window.Resources>
+    <Grid>
+        <DataGrid CanUserAddRows="False" CanUserDeleteRows="False" 
+                  IsManipulationEnabled="False"
+                  IsReadOnly="True"
+                  ItemsSource="{Binding TestResultList}" 
+                  SelectedItem="{Binding TestResultSelected,Mode=TwoWay}"
+                  Margin="0,0,347,390">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <cal:ActionMessage MethodName="TestResultClicked" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </DataGrid>
+        <!--<DataGrid CanUserAddRows="False" CanUserDeleteRows="False" ItemsSource="{Binding MethodValuesForReport}" Margin="1,397,346,3">
+        </DataGrid>-->
+        <dvc:Chart Name="McChart" Background="LightSteelBlue" Margin="1,397,346,3"
+                   Visibility="{Binding CanViewResult, Converter={StaticResource BoolToVisible}}" >
+            <dvc:Chart.Axes>
+                <dvc:CategoryAxis Orientation="X" Visibility="Hidden" />
+            </dvc:Chart.Axes>
+            <dvc:Chart.Series>
+                    <dvc:LineSeries Title="Method Results" ItemsSource="{Binding MethodValuesForReport}"
+                                IndependentValueBinding="{Binding Path=Key}"
+                                DependentValueBinding="{Binding Path=Value}"
+                                >
+                    <dvc:LineSeries.DataPointStyle>
+                        <Style TargetType="{x:Type dvc:LineDataPoint}">
+                            <Setter Property="Opacity" Value="0" />
+                        </Style>
+                    </dvc:LineSeries.DataPointStyle>
+                </dvc:LineSeries>
+            </dvc:Chart.Series>
+        </dvc:Chart>
+        <Button x:Name="ViewResultFile" Visibility="{Binding CanViewResult, Converter={StaticResource BoolToVisible}}" Content="View Result File" HorizontalAlignment="Left" Margin="1049,34,0,0" VerticalAlignment="Top" Width="155" Height="57"/>
+        <Button x:Name="StopTest" Visibility="{Binding CanViewStopTest, Converter={StaticResource BoolToVisible}}" Content="Stop Test" HorizontalAlignment="Left" Margin="1049,34,0,0" VerticalAlignment="Top" Width="155" Height="57"/>
+    </Grid>
+</Window>

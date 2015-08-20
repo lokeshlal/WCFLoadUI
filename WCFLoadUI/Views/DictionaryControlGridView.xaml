@@ -1,0 +1,62 @@
+﻿<Window x:Class="WCFLoadUI.Views.DictionaryControlGridView"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" 
+      Title="{Binding WindowTitle}"
+      Width="1300" Height="800"
+      WindowStartupLocation="CenterScreen"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:cal="http://www.caliburnproject.org"
+        ResizeMode="NoResize" 
+        ShowInTaskbar="False">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid>
+            <DockPanel Margin="23,23,0,0">
+                <ItemsControl ItemsSource="{Binding Properties}"  AlternationCount="1000">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <WrapPanel ItemWidth="120" Margin="0, 0, 0, 4">
+                                <TextBlock Text="{Binding Path=(ItemsControl.AlternationIndex),
+                            RelativeSource={RelativeSource Mode=TemplatedParent},
+                            StringFormat={}Index is {0}}" />
+
+                                <Button Content="Add/Update Key">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="AddUpdateRecord">
+                                                <cal:Parameter Value="{Binding Path=(ItemsControl.AlternationIndex),
+                                            RelativeSource={RelativeSource Mode=TemplatedParent},
+                                            StringFormat={}{0}}" />
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                            </WrapPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <ItemsControl ItemsSource="{Binding PropertiesValue}"  AlternationCount="1000">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <WrapPanel ItemWidth="120" Margin="0, 0, 0, 4">
+                                <Button Content="Add/Update Value" Margin="4, 0, 0, 0">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="AddUpdateRecordValue">
+                                                <cal:Parameter Value="{Binding Path=(ItemsControl.AlternationIndex),
+                                            RelativeSource={RelativeSource Mode=TemplatedParent},
+                                            StringFormat={}{0}}" />
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                            </WrapPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </DockPanel>
+        </Grid>
+    </ScrollViewer>
+</Window>

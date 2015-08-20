@@ -1,0 +1,108 @@
+﻿<UserControl x:Class="WCFLoadUI.UserControls.PrimitiveControlView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d"
+             xmlns:cal="http://www.caliburnproject.org"
+        xmlns:converters="clr-namespace:WCFLoadUI.Converters"
+             d:DesignHeight="40" 
+             xmlns:ts="clr-namespace:WCFLoadUI.TemplateSelectors"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"   >
+    <UserControl.Resources>
+        <converters:DateTimeFieldVisibilityValueConverter x:Key="DateTimeFieldVisibility" />
+        <converters:DateTimeTextFieldVisibilityValueConverter x:Key="DateTimeTextFieldVisibility" />
+        <DataTemplate x:Key="TStringTemplate">
+            <TextBox x:Name="TxtFieldValue" Text="{Binding FieldValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"   RenderTransformOrigin="-9.3,0.5" Width="350" FontSize="16" TextAlignment="Left" VerticalAlignment="Center"/>
+        </DataTemplate>
+        <DataTemplate x:Key="TBooleanTemplate">
+            <CheckBox x:Name="BooleanFieldValue"
+                      IsChecked="{Binding FieldValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        RenderTransformOrigin="-9.3,0.5" Width="350" FontSize="16" 
+                  VerticalAlignment="Center" />
+        </DataTemplate>
+        <DataTemplate x:Key="TIntegerTemplate">
+            <xctk:IntegerUpDown Value="{Binding FieldValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             RenderTransformOrigin="-9.3,0.5" Width="350" FontSize="16" 
+                            />
+        </DataTemplate>
+        <DataTemplate x:Key="TLongTemplate">
+            <xctk:LongUpDown Value="{Binding FieldValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             RenderTransformOrigin="-9.3,0.5" Width="350" FontSize="16" 
+                            />
+        </DataTemplate>
+        <DataTemplate x:Key="TDecimalTemplate">
+            <xctk:DecimalUpDown Value="{Binding FieldValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             RenderTransformOrigin="-9.3,0.5" Width="350" FontSize="16" 
+                            />
+        </DataTemplate>
+        <DataTemplate x:Key="TCharTemplate">
+            <xctk:MaskedTextBox  Value="{Binding FieldValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             RenderTransformOrigin="-9.3,0.5" Width="350" FontSize="16"
+                            RestrictToAscii="True" Mask="C"     />
+        </DataTemplate>
+        <DataTemplate x:Key="TDoubleTemplate">
+            <xctk:DoubleUpDown Value="{Binding FieldValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             RenderTransformOrigin="-9.3,0.5" Width="350" FontSize="16" />
+        </DataTemplate>
+        <DataTemplate x:Key="TEnumTemplate">
+            <ComboBox 
+                    
+                SelectedItem="{Binding SelectedEnumItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      SelectedIndex="{Binding SelectedEnumIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      ItemsSource="{Binding EnumValues, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      DisplayMemberPath="Name"
+                             RenderTransformOrigin="-9.3,0.5" Width="350" FontSize="16" />
+        </DataTemplate>
+        <DataTemplate x:Key="TDateTimeTemplate">
+            <Grid>
+                <xctk:DateTimePicker Value="{Binding FieldValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding FieldValue, Converter={StaticResource DateTimeFieldVisibility}}"
+                             RenderTransformOrigin="-9.3,0.5" Width="350" FontSize="16" />
+
+
+                <TextBox 
+                    Visibility="{Binding FieldValue, Converter={StaticResource DateTimeTextFieldVisibility}}" 
+                    Text="{Binding FieldValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  
+                     
+                    RenderTransformOrigin="-9.3,0.5" 
+                    Width="350" 
+                    FontSize="16" 
+                    TextAlignment="Left" VerticalAlignment="Center" />
+
+                
+                
+            </Grid>
+        </DataTemplate>
+        <ts:PrimitiveControlTemplateSelector x:Key="PrimitiveControlTemplateSelector" 
+                StringTemplate="{StaticResource TStringTemplate}"
+                BooleanTemplate="{StaticResource TBooleanTemplate}"
+                IntegerTemplate="{StaticResource TIntegerTemplate}"
+                DoubleTemplate="{StaticResource TDoubleTemplate}"
+                LongTemplate="{StaticResource TLongTemplate}"
+                DecimalTemplate="{StaticResource TDecimalTemplate}"
+                CharTemplate="{StaticResource TCharTemplate}"
+                DateTimeTemplate="{StaticResource TDateTimeTemplate}"
+                EnumTemplate="{StaticResource TEnumTemplate}"
+                />
+    </UserControl.Resources>
+    <DockPanel>
+        <Button 
+            IsHitTestVisible="True"
+            cal:Message.Attach="[Event Click] = [Action FieldNameControl]"
+            x:Name="FieldNameControl" Content="{Binding FieldName}" HorizontalAlignment="Left" Width="200" FontSize="16" VerticalAlignment="Center" />
+
+        <!--<xctk:SplitButton Content="{Binding FieldName}" HorizontalAlignment="Left" Width="240" FontSize="16" VerticalAlignment="Center">
+            <xctk:SplitButton.DropDownContent>
+                <ComboBox SelectedItem="{Binding SelectedSpecialValue, Mode=TwoWay}" Width="150"  ItemsSource="{Binding SpecialValueList}" />
+
+            </xctk:SplitButton.DropDownContent>
+        </xctk:SplitButton>-->
+
+
+        <!--<ItemsControl ItemsSource="{Binding FieldValue}" ItemTemplateSelector="{StaticResource PrimitiveControlTemplateSelector}" />-->
+        <!--<TextBox x:Name="TxtFieldValue" Text="{Binding FieldValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"   RenderTransformOrigin="-9.3,0.5" Width="350" FontSize="16" TextAlignment="Left" VerticalAlignment="Center"/>-->
+
+        <ContentControl Content="{Binding}" HorizontalAlignment="Left" Margin="5,0,0,0" ContentTemplateSelector="{StaticResource PrimitiveControlTemplateSelector}" />
+
+    </DockPanel>
+</UserControl>
