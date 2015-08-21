@@ -6,6 +6,7 @@
 // <date>08/19/2015</date>
 // <history>
 // 08/19/2015: Created - Lokesh Lal
+// 08/21/2015: Added support to run rest without wsdl project added first
 // </history>
 #endregion
 using System;
@@ -50,6 +51,14 @@ namespace WCFLoadUI.ApplicationController
         public static void ShowServiceUrlViewDialog()
         {
             DialogHelper.ShowDialog<ServiceUrlViewModel>();
+        }
+
+        /// <summary>
+        /// Displays service url view dialog
+        /// </summary>
+        public static void ShowServiceUrlViewDialog(bool isAddARestEnabled)
+        {
+            DialogHelper.ShowDialog<ServiceUrlViewModel>(isAddARestEnabled);
         }
 
         /// <summary>
@@ -112,16 +121,25 @@ namespace WCFLoadUI.ApplicationController
         /// <summary>
         /// Displays service url view dialog and returns property value and fetches method name list for service
         /// </summary>
-        public static List<string> ShowServiceUrlViewDialog(string propertyName, out string guid)
+        public static List<string> ShowServiceUrlViewDialog(string propertyName, out string guid, bool isAddARestEnabled = false)
         {
-            string serviceUrl = Convert.ToString(DialogHelper.ShowDialog<ServiceUrlViewModel>(propertyName));
+            string serviceUrl = Convert.ToString(DialogHelper.ShowDialog<ServiceUrlViewModel>(propertyName, isAddARestEnabled));
             if (!string.IsNullOrEmpty(serviceUrl))
             {
-                WCFLoad.Test.Clear();
-                Guid g = Guid.NewGuid();
-                guid = g.ToString();
-                WCFLoad.Test.GenerateProxyAssembly(serviceUrl, g.ToString(), true);
-                return WCFLoad.Test.GetAllServiceMethods(g.ToString());
+                if (serviceUrl == "AddARest")
+                {
+                    WCFLoad.Test.Clear();
+                    guid = "AddARest";
+                    return null;
+                }
+                else
+                {
+                    WCFLoad.Test.Clear();
+                    Guid g = Guid.NewGuid();
+                    guid = g.ToString();
+                    WCFLoad.Test.GenerateProxyAssembly(serviceUrl, g.ToString(), true);
+                    return WCFLoad.Test.GetAllServiceMethods(g.ToString());
+                }
             }
             guid = string.Empty;
             return null;
@@ -131,9 +149,9 @@ namespace WCFLoadUI.ApplicationController
         /// <summary>
         /// Displays service url view dialog and returns property value and fetches method name list for service
         /// </summary>
-        public static List<string> ShowServiceUrlViewDialogForAdd(string propertyName, out string guid)
+        public static List<string> ShowServiceUrlViewDialogForAdd(string propertyName, out string guid, bool isAddARestEnabled = false)
         {
-            string serviceUrl = Convert.ToString(DialogHelper.ShowDialog<ServiceUrlViewModel>(propertyName));
+            string serviceUrl = Convert.ToString(DialogHelper.ShowDialog<ServiceUrlViewModel>(propertyName, isAddARestEnabled));
             if (!string.IsNullOrEmpty(serviceUrl))
             {
                 if (WCFLoad.Test.TestPackage.Suites.FindAll(s => s.ServiceUrl.ToLower() == serviceUrl.ToLower()).Any())
@@ -215,7 +233,7 @@ namespace WCFLoadUI.ApplicationController
             IsFunctionalTestCompleted = false;
             Task.Factory.StartNew(() =>
             {
-                int ii = 0;
+                int ii;
                 foreach (var t in WCFLoad.Test.TestPackage.Suites.SelectMany(s => s.FunctionalTests))
                 {
                     for (ii = 0; ii < t.Service.Values.ValueList.Count; ii++)
@@ -246,7 +264,7 @@ namespace WCFLoadUI.ApplicationController
                 {
                     FunctionalTestUpdated(null, null);
                 }
-                var ij = 0;
+                int ij;
                 foreach (var s in WCFLoad.Test.TestPackage.Suites)
                 {
                     foreach (var t in s.FunctionalTests)
@@ -331,7 +349,9 @@ namespace WCFLoadUI.ApplicationController
             WCFLoad.Test.Clear();
             WCFLoad.Test.LoadTest(filePath);
             //Get guid of first service
-            return WCFLoad.Test.GetAllServiceMethods(WCFLoad.Test.TestPackage.Suites[0].Guid);
+            if (WCFLoad.Test.TestPackage.Suites.Count > 0)
+                return WCFLoad.Test.GetAllServiceMethods(WCFLoad.Test.TestPackage.Suites[0].Guid);
+            return new List<string>();
         }
 
         /// <summary> 
@@ -434,6 +454,10 @@ namespace WCFLoadUI.ApplicationController
                         {
                             Random r = new Random();
                             bool executeWcf = r.Next(0, 1000) % 2 == 0;
+
+                            if (WCFLoad.Test.TestPackage.Suites.Count == 0)
+                                executeWcf = false;
+
                             if (executeWcf || WCFLoad.Test.TestPackage.RestMethods.Count == 0)
                             {
                                 int suiteNumberToExecute = r.Next(0, WCFLoad.Test.TestPackage.Suites.Count - 1);

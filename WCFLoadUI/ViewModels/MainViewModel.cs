@@ -6,6 +6,7 @@
 // <date>08/19/2015</date>
 // <history>
 // 08/19/2015: Created - Lokesh Lal
+// 08/21/2015: Modified to add support for rest without wsdl added first
 // </history>
 #endregion
 using System;
@@ -433,7 +434,7 @@ namespace WCFLoadUI.ViewModels
         public void MenuNew()
         {
             string guid;
-            var sm = Controller.ShowServiceUrlViewDialog(Constants.Serviceurl, out guid);
+            var sm = Controller.ShowServiceUrlViewDialog(Constants.Serviceurl, out guid, true);
             if (sm != null)
             {
                 ServiceMethods = sm;
@@ -442,6 +443,16 @@ namespace WCFLoadUI.ViewModels
 
                 SetServiceUrl(guid);
 
+                _perfXmlfilePath = string.Empty;
+                _canRun = false;
+                NotifyOfPropertyChange(() => CanRunPerfTest);
+
+                ResetForm();
+            }
+            else if (guid == "AddARest")
+            {
+                //rest service add request
+                CurrentServiceGuid = string.Empty;
                 _perfXmlfilePath = string.Empty;
                 _canRun = false;
                 NotifyOfPropertyChange(() => CanRunPerfTest);
@@ -521,16 +532,18 @@ namespace WCFLoadUI.ViewModels
             {
                 _perfXmlfilePath = openFileDialog.FileName;
                 ServiceMethods = Controller.LoadXmlFileAndGetAllMethods(_perfXmlfilePath);
-                CurrentServiceGuid = Test.TestPackage.Suites[0].Guid;
-                Bindings = Test.TestPackage.Suites[0].EndPoints.Keys.ToList();
-
                 NoOfClients = Test.TestPackage.Clients;
                 Duration = Test.TestPackage.Duration;
                 DelayRangeStart = Test.TestPackage.DelayRangeStart;
                 DelayRangeEnd = Test.TestPackage.DelayRangeEnd;
-                SelectedBinding = Test.TestPackage.Suites[0].BindingToTest;
                 ResultFilePath = Test.TestPackage.ResultFileName;
-                SetServiceUrl(CurrentServiceGuid);
+                if (Test.TestPackage.Suites.Count > 0)
+                {
+                    CurrentServiceGuid = Test.TestPackage.Suites[0].Guid;
+                    Bindings = Test.TestPackage.Suites[0].EndPoints.Keys.ToList();
+                    SelectedBinding = Test.TestPackage.Suites[0].BindingToTest;
+                    SetServiceUrl(CurrentServiceGuid);
+                }
                 _canRun = true;
                 NotifyOfPropertyChange(() => CanRunPerfTest);
 
@@ -832,7 +845,7 @@ namespace WCFLoadUI.ViewModels
 
         public void RemoveService()
         {
-           
+
         }
 
         public void DeleteValues()

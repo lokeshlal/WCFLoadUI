@@ -6,6 +6,7 @@
 // <date>08/19/2015</date>
 // <history>
 // 08/19/2015: Created - Lokesh Lal
+// 08/21/2015: Modified to add support for rest without wsdl added first
 // </history>
 #endregion
 using System;
@@ -104,6 +105,10 @@ namespace WCFService
                         {
                             Random r = new Random();
                             bool executeWcf = r.Next(0, 1000) % 2 == 0;
+
+                            if (Test.TestPackage.Suites.Count == 0)
+                                executeWcf = false;
+
                             if (executeWcf || Test.TestPackage.RestMethods.Count == 0)
                             {
                                 int suiteNumberToExecute = r.Next(0, Test.TestPackage.Suites.Count - 1);

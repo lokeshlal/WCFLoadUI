@@ -6,6 +6,7 @@
 // <date>08/19/2015</date>
 // <history>
 // 08/19/2015: Created - Lokesh Lal
+// 08/21/2015: Added support to start a rest project without adding WSDL first
 // </history>
 #endregion
 using WCFLoadUI.Base;
@@ -19,6 +20,16 @@ namespace WCFLoadUI.ViewModels
         private string _windowTitle = WindowTitleDefault;
         private string _serviceUrl = string.Empty;
         private bool _setFocusOnTextBox;
+        private bool _isAddARestEnabled;
+        #endregion
+
+        #region constructor
+        public ServiceUrlViewModel() { }
+
+        public ServiceUrlViewModel(bool isAddARestEnabled)
+        {
+            IsAddARestEnabled = isAddARestEnabled;
+        }
         #endregion
 
         #region public properties
@@ -57,6 +68,17 @@ namespace WCFLoadUI.ViewModels
                 NotifyOfPropertyChange(() => WindowTitle);
             }
         }
+
+        public bool IsAddARestEnabled
+        {
+            get { return _isAddARestEnabled; }
+            set
+            {
+                _isAddARestEnabled = value;
+                NotifyOfPropertyChange(() => IsAddARestEnabled);
+            }
+        }
+
         #endregion
 
         #region View Events
@@ -65,6 +87,13 @@ namespace WCFLoadUI.ViewModels
         /// </summary>
         public void AddServiceUrl()
         {
+            DialogWindow.DialogResult = true;
+            ExecuteCancelCommand();
+        }
+
+        public void AddARest()
+        {
+            ServiceUrl = "AddARest";
             DialogWindow.DialogResult = true;
             ExecuteCancelCommand();
         }
