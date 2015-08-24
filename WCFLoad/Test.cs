@@ -521,7 +521,8 @@ namespace WCFLoad
                     newSuite.BaseUrl = newSuite.ServiceUrl;
                     newSuite.Wsdl = newSuite.ServiceUrl + "?wsdl";
 
-                    newSuite.BindingToTest = Convert.ToString(suite.Attribute("bindingToTest").Value);
+                    if (suite.Attributes("bindingToTest").Any())
+                        newSuite.BindingToTest = Convert.ToString(suite.Attribute("bindingToTest").Value);
 
                     if (suite.Attributes("configuration").Any())
                         newSuite.Configuration = Convert.ToString(suite.Attribute("configuration").Value);
