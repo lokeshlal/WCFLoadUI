@@ -26,4 +26,4 @@ If you would like to contribute, please drop in an email at (lokeshlal [at] gmai
 Hopefully someone may find this useful.
 
 ###### Limitations:
-1. Utility assumes that the WSDL contains one and only one service.
+1. Utility assumes that one WSDL contains one and only one service.
