@@ -38,6 +38,7 @@ using WCFLoad.Helper;
 using Binding = System.ServiceModel.Channels.Binding;
 using Service = Common.Service;
 using ServiceDescription = System.Web.Services.Description.ServiceDescription;
+using System.Collections.ObjectModel;
 
 namespace WCFLoad
 {
@@ -188,51 +189,104 @@ namespace WCFLoad
                                  t.GetInterface(_serviceInterface[guid].Name) != null &&
                                  t.GetInterface(typeof(ICommunicationObject).Name) != null);
 
-            Binding binding;
+            Binding binding = null;
             TestSuite suite = TestPackage.Suites.Find(s => s.Guid == guid);
-            string endPointUrl;
+            string endPointUrl = string.Empty;
+            string endPointType = string.Empty;
             if (string.IsNullOrEmpty(suite.BindingToTest))
             {
-                endPointUrl = suite.EndPoints.FirstOrDefault().Value;
+
+                if (suite.EndpointsForContracts.Count > 0)
+                {
+                    ServiceEndpoint serviceEndpoint = suite.EndpointsForContracts.ElementAt(0).Value.FirstOrDefault();
+                    if (serviceEndpoint != null)
+                    {
+                        binding = serviceEndpoint.Binding;
+                        endPointUrl = serviceEndpoint.Address.Uri.ToString();
+                    }
+                }
+                if (string.IsNullOrEmpty(endPointUrl))
+                {
+                    if (suite.EndPoints.Count > 0)
+                    {
+                        endPointUrl = suite.EndPoints.FirstOrDefault().Value;
+                        endPointType = suite.EndPointType.FirstOrDefault().Value;
+                    }
+                    else
+                    {
+                        //Fallback to basic url
+                        endPointUrl = suite.ServiceUrl;
+                    }
+                }
             }
             else
             {
-                endPointUrl = suite.EndPoints.Count > 0 ? suite.EndPoints[suite.BindingToTest] : suite.ServiceUrl;
+                if (suite.EndpointsForContracts.Count > 0)
+                {
+                    if (
+                        suite.EndpointsForContracts.ElementAt(0)
+                            .Value
+                            .Any(se => se.Binding.Name == suite.BindingToTest))
+                    {
+                        var serviceEndpoint = suite.EndpointsForContracts.ElementAt(0).Value.First(se => se.Binding.Name == suite.BindingToTest);
+                        binding = serviceEndpoint.Binding;
+                        endPointUrl = serviceEndpoint.Address.Uri.ToString();
+
+                    }
+                }
+                if (string.IsNullOrEmpty(endPointUrl))
+                {
+                    endPointUrl = suite.EndPoints.Count > 0 && suite.EndPoints.ContainsKey(suite.BindingToTest)
+                        ? suite.EndPoints[suite.BindingToTest]
+                        : suite.ServiceUrl;
+                    endPointType = suite.EndPointType.Count > 0 && suite.EndPointType.ContainsKey(suite.BindingToTest)
+                        ? suite.EndPointType[suite.BindingToTest]
+                        : string.Empty;
+                }
             }
 
-            if (endPointUrl.StartsWith("net.tcp"))
+            //fallback in case end points are not handled via contract bindings
+            if (binding == null)
             {
-                binding = new NetTcpBinding();
-                ((NetTcpBinding)binding).MaxBufferSize = Int32.MaxValue;
-                ((NetTcpBinding)binding).MaxReceivedMessageSize = Int32.MaxValue;
-                ((NetTcpBinding)binding).MaxBufferPoolSize = Int32.MaxValue;
-                ((NetTcpBinding)binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
+                switch (endPointType)
+                {
+                    case "BasicHttpBinding":
+                        binding = new BasicHttpBinding();
+                        ((BasicHttpBinding) binding).MaxBufferSize = Int32.MaxValue;
+                        ((BasicHttpBinding) binding).MaxReceivedMessageSize = Int32.MaxValue;
+                        ((BasicHttpBinding) binding).MaxBufferPoolSize = Int32.MaxValue;
+                        ((BasicHttpBinding) binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
+                        break;
+                    case "WSHttpBinding":
+                        binding = new WSHttpBinding();
+                        ((WSHttpBinding) binding).MaxReceivedMessageSize = Int32.MaxValue;
+                        ((WSHttpBinding) binding).MaxBufferPoolSize = Int32.MaxValue;
+                        ((WSHttpBinding) binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
+                        break;
+                    case "NetTcpBinding":
+                        binding = new NetTcpBinding();
+                        ((NetTcpBinding) binding).MaxBufferSize = Int32.MaxValue;
+                        ((NetTcpBinding) binding).MaxReceivedMessageSize = Int32.MaxValue;
+                        ((NetTcpBinding) binding).MaxBufferPoolSize = Int32.MaxValue;
+                        ((NetTcpBinding) binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
+                        break;
+                    case "":
+                        binding = new WebHttpBinding();
+                        ((WebHttpBinding) binding).MaxBufferSize = Int32.MaxValue;
+                        ((WebHttpBinding) binding).MaxReceivedMessageSize = Int32.MaxValue;
+                        ((WebHttpBinding) binding).MaxBufferPoolSize = Int32.MaxValue;
+                        ((WebHttpBinding) binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
+                        break;
+                    default:
+                        binding = new BasicHttpBinding();
+                        ((BasicHttpBinding) binding).MaxBufferSize = Int32.MaxValue;
+                        ((BasicHttpBinding) binding).MaxReceivedMessageSize = Int32.MaxValue;
+                        ((BasicHttpBinding) binding).MaxBufferPoolSize = Int32.MaxValue;
+                        ((BasicHttpBinding) binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
+                        break;
+                }
             }
-            else
-            {
-                binding = new BasicHttpBinding();
-                ((BasicHttpBinding)binding).MaxBufferSize = Int32.MaxValue;
-                ((BasicHttpBinding)binding).MaxReceivedMessageSize = Int32.MaxValue;
-                ((BasicHttpBinding)binding).MaxBufferPoolSize = Int32.MaxValue;
-                ((BasicHttpBinding)binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
-            }
 
-            //TODO add support dor additional bindings
-            //binding = new WSHttpBinding();
-
-            //System.ServiceModel.BasicHttpsBinding
-            //System.ServiceModel.NetHttpBinding
-            //System.ServiceModel.NetHttpsBinding
-            //System.ServiceModel.NetMsmqBinding
-            //System.ServiceModel.NetNamedPipeBinding
-            //System.ServiceModel.NetPeerTcpBinding
-            //System.ServiceModel.WS2007HttpBinding
-            //System.ServiceModel.WSDualHttpBinding
-            //System.ServiceModel.WSFederationHttpBinding
-
-            // Create an instance of the proxy
-            // Pass the endpoint's binding and address as parameters
-            // to the ctor
             return _assembly[guid].CreateInstance(
                 clientProxyType.Name,
                 false,
@@ -308,6 +362,7 @@ namespace WCFLoad
                 }
             }
 
+            //Additional check in case some services do not generate end points using generator
             for (int w = 0; w < wsdlimporter.WsdlDocuments.Count; w++)
             {
                 for (int se = 0; se < wsdlimporter.WsdlDocuments[w].Services.Count; se++)
@@ -320,11 +375,56 @@ namespace WCFLoad
 
                             switch (wsdlimporter.WsdlDocuments[w].Services[se].Ports[po].Extensions[ext].GetType().Name)
                             {
+                                //BasicHttpBinding
                                 case "SoapAddressBinding":
+                                    _endPointUrls.Add(((wsdlimporter.WsdlDocuments[w].Services[se].Ports[po])).Binding.Name, ((SoapAddressBinding)(wsdlimporter.WsdlDocuments[w].Services[se].Ports[po].Extensions[ext])).Location);
+                                    if (suite != null &&
+                                        !suite.EndPoints.ContainsKey(
+                                            ((wsdlimporter.WsdlDocuments[w].Services[se].Ports[po])).Binding.Name))
+                                    {
+                                        suite.EndPoints.Add(
+                                            ((wsdlimporter.WsdlDocuments[w].Services[se].Ports[po])).Binding.Name,
+                                            ((SoapAddressBinding)
+                                                (wsdlimporter.WsdlDocuments[w].Services[se].Ports[po].Extensions[ext]))
+                                                .Location);
+                                        suite.EndPointType.Add(((wsdlimporter.WsdlDocuments[w].Services[se].Ports[po])).Binding.Name,
+                                            "BasicHttpBinding");
+                                    }
+                                    break;
+                                //WSHttpBinding
                                 case "Soap12AddressBinding":
                                     _endPointUrls.Add(((wsdlimporter.WsdlDocuments[w].Services[se].Ports[po])).Binding.Name, ((SoapAddressBinding)(wsdlimporter.WsdlDocuments[w].Services[se].Ports[po].Extensions[ext])).Location);
-                                    if (suite != null && !suite.EndPoints.ContainsKey(((wsdlimporter.WsdlDocuments[w].Services[se].Ports[po])).Binding.Name))
-                                        suite.EndPoints.Add(((wsdlimporter.WsdlDocuments[w].Services[se].Ports[po])).Binding.Name, ((SoapAddressBinding)(wsdlimporter.WsdlDocuments[w].Services[se].Ports[po].Extensions[ext])).Location);
+                                    if (suite != null &&
+                                        !suite.EndPoints.ContainsKey(
+                                            ((wsdlimporter.WsdlDocuments[w].Services[se].Ports[po])).Binding.Name))
+                                    {
+                                        if (((SoapAddressBinding)
+                                            (wsdlimporter.WsdlDocuments[w].Services[se].Ports[po].Extensions[ext]))
+                                            .Location.ToLower().StartsWith("net.tcp"))
+                                        {
+                                            suite.EndPoints.Add(
+                                               ((wsdlimporter.WsdlDocuments[w].Services[se].Ports[po])).Binding.Name,
+                                               ((SoapAddressBinding)
+                                                   (wsdlimporter.WsdlDocuments[w].Services[se].Ports[po].Extensions[ext
+                                                       ]))
+                                                   .Location);
+                                            suite.EndPointType.Add(
+                                                ((wsdlimporter.WsdlDocuments[w].Services[se].Ports[po])).Binding.Name,
+                                                "NetTcpBinding");
+                                        }
+                                        else
+                                        {
+                                            suite.EndPoints.Add(
+                                                ((wsdlimporter.WsdlDocuments[w].Services[se].Ports[po])).Binding.Name,
+                                                ((SoapAddressBinding)
+                                                    (wsdlimporter.WsdlDocuments[w].Services[se].Ports[po].Extensions[ext
+                                                        ]))
+                                                    .Location);
+                                            suite.EndPointType.Add(
+                                                ((wsdlimporter.WsdlDocuments[w].Services[se].Ports[po])).Binding.Name,
+                                                "WSHttpBinding");
+                                        }
+                                    }
                                     break;
                                 case "XmlElement":
                                     break;
@@ -334,13 +434,14 @@ namespace WCFLoad
                 }
             }
 
+
+
+
             foreach (Import import in wsdlimporter.WsdlDocuments[0].Imports)
             {
                 GenerateProxyAssembly(import.Location, guid);
                 return;
             }
-
-            ServiceContractGenerator generator = new ServiceContractGenerator();
 
             XsdDataContractImporter xsd = new XsdDataContractImporter
             {
@@ -355,17 +456,23 @@ namespace WCFLoad
 
             wsdlimporter.State.Add(typeof(XsdDataContractImporter), xsd);
 
-            IEnumerable<ContractDescription> contracts
-                = wsdlimporter.ImportAllContracts();
-            wsdlimporter.ImportAllEndpoints();
-
+            Collection<ContractDescription> contracts = wsdlimporter.ImportAllContracts();
+            ServiceEndpointCollection allEndpoints = wsdlimporter.ImportAllEndpoints();
+            // Generate type information for each contract.
+            ServiceContractGenerator serviceContractGenerator = new ServiceContractGenerator();
 
             foreach (var contract in contracts)
             {
-                generator.GenerateServiceContractType(contract);
+                serviceContractGenerator.GenerateServiceContractType(contract);
+                // Keep a list of each contract's endpoints.
+                if (suite != null)
+                {
+                    suite.EndpointsForContracts[contract.Name] =
+                        allEndpoints.Where(ep => ep.Contract.Name == contract.Name).ToList();
+                }
             }
 
-            if (generator.Errors.Count != 0)
+            if (serviceContractGenerator.Errors.Count != 0)
                 throw new Exception("There were errors during code compilation.");
 
 
@@ -378,7 +485,7 @@ namespace WCFLoad
             // include the assembly references needed to compile
             var references = new[] { "System.Web.Services.dll", "System.Xml.dll", "System.ServiceModel.dll", "System.configuration.dll", "System.Runtime.Serialization.dll" };
             var parameters = new CompilerParameters(references) { GenerateInMemory = true };
-            var results = compiler.CompileAssemblyFromDom(parameters, generator.TargetCompileUnit);
+            var results = compiler.CompileAssemblyFromDom(parameters, serviceContractGenerator.TargetCompileUnit);
 
             if (results.Errors.Cast<CompilerError>().Any())
             {

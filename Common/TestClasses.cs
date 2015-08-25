@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.ServiceModel.Description;
 
 //Classes to hold performance test
 
@@ -295,6 +296,8 @@ namespace Common
     public class TestSuite
     {
         public Dictionary<string, string> EndPoints = new Dictionary<string, string>();
+        public Dictionary<string, string> EndPointType = new Dictionary<string, string>();
+        public Dictionary<string, IEnumerable<ServiceEndpoint>> EndpointsForContracts = new Dictionary<string, IEnumerable<ServiceEndpoint>>();
 
         public TestSuite()
         {
