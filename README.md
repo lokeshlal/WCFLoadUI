@@ -24,3 +24,6 @@ I  created this utility during my spare time and as of now this utility lacks in
 If you would like to contribute, please drop in an email at (lokeshlal [at] gmail.com).
 
 Hopefully someone may find this useful.
+
+###### Limitations:
+1. Utility assumes that the WSDL contains one and only one service.
