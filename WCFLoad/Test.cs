@@ -198,11 +198,12 @@ namespace WCFLoad
 
                 if (suite.EndpointsForContracts.Count > 0)
                 {
-                    ServiceEndpoint serviceEndpoint = suite.EndpointsForContracts.ElementAt(0).Value.FirstOrDefault();
+                    //ServiceEndpoint serviceEndpoint = suite.EndpointsForContracts.ElementAt(0).Value.FirstOrDefault();
+                    EndpointsForContractsClass serviceEndpoint = suite.EndpointsForContracts.ElementAt(0).Value.FirstOrDefault();
                     if (serviceEndpoint != null)
                     {
                         binding = serviceEndpoint.Binding;
-                        endPointUrl = serviceEndpoint.Address.Uri.ToString();
+                        endPointUrl = serviceEndpoint.Uri;
                     }
                 }
                 if (string.IsNullOrEmpty(endPointUrl))
@@ -230,7 +231,7 @@ namespace WCFLoad
                     {
                         var serviceEndpoint = suite.EndpointsForContracts.ElementAt(0).Value.First(se => se.Binding.Name == suite.BindingToTest);
                         binding = serviceEndpoint.Binding;
-                        endPointUrl = serviceEndpoint.Address.Uri.ToString();
+                        endPointUrl = serviceEndpoint.Uri;
 
                     }
                 }
@@ -252,37 +253,37 @@ namespace WCFLoad
                 {
                     case "BasicHttpBinding":
                         binding = new BasicHttpBinding();
-                        ((BasicHttpBinding) binding).MaxBufferSize = Int32.MaxValue;
-                        ((BasicHttpBinding) binding).MaxReceivedMessageSize = Int32.MaxValue;
-                        ((BasicHttpBinding) binding).MaxBufferPoolSize = Int32.MaxValue;
-                        ((BasicHttpBinding) binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
+                        ((BasicHttpBinding)binding).MaxBufferSize = Int32.MaxValue;
+                        ((BasicHttpBinding)binding).MaxReceivedMessageSize = Int32.MaxValue;
+                        ((BasicHttpBinding)binding).MaxBufferPoolSize = Int32.MaxValue;
+                        ((BasicHttpBinding)binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
                         break;
                     case "WSHttpBinding":
                         binding = new WSHttpBinding();
-                        ((WSHttpBinding) binding).MaxReceivedMessageSize = Int32.MaxValue;
-                        ((WSHttpBinding) binding).MaxBufferPoolSize = Int32.MaxValue;
-                        ((WSHttpBinding) binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
+                        ((WSHttpBinding)binding).MaxReceivedMessageSize = Int32.MaxValue;
+                        ((WSHttpBinding)binding).MaxBufferPoolSize = Int32.MaxValue;
+                        ((WSHttpBinding)binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
                         break;
                     case "NetTcpBinding":
                         binding = new NetTcpBinding();
-                        ((NetTcpBinding) binding).MaxBufferSize = Int32.MaxValue;
-                        ((NetTcpBinding) binding).MaxReceivedMessageSize = Int32.MaxValue;
-                        ((NetTcpBinding) binding).MaxBufferPoolSize = Int32.MaxValue;
-                        ((NetTcpBinding) binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
+                        ((NetTcpBinding)binding).MaxBufferSize = Int32.MaxValue;
+                        ((NetTcpBinding)binding).MaxReceivedMessageSize = Int32.MaxValue;
+                        ((NetTcpBinding)binding).MaxBufferPoolSize = Int32.MaxValue;
+                        ((NetTcpBinding)binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
                         break;
                     case "":
                         binding = new WebHttpBinding();
-                        ((WebHttpBinding) binding).MaxBufferSize = Int32.MaxValue;
-                        ((WebHttpBinding) binding).MaxReceivedMessageSize = Int32.MaxValue;
-                        ((WebHttpBinding) binding).MaxBufferPoolSize = Int32.MaxValue;
-                        ((WebHttpBinding) binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
+                        ((WebHttpBinding)binding).MaxBufferSize = Int32.MaxValue;
+                        ((WebHttpBinding)binding).MaxReceivedMessageSize = Int32.MaxValue;
+                        ((WebHttpBinding)binding).MaxBufferPoolSize = Int32.MaxValue;
+                        ((WebHttpBinding)binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
                         break;
                     default:
                         binding = new BasicHttpBinding();
-                        ((BasicHttpBinding) binding).MaxBufferSize = Int32.MaxValue;
-                        ((BasicHttpBinding) binding).MaxReceivedMessageSize = Int32.MaxValue;
-                        ((BasicHttpBinding) binding).MaxBufferPoolSize = Int32.MaxValue;
-                        ((BasicHttpBinding) binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
+                        ((BasicHttpBinding)binding).MaxBufferSize = Int32.MaxValue;
+                        ((BasicHttpBinding)binding).MaxReceivedMessageSize = Int32.MaxValue;
+                        ((BasicHttpBinding)binding).MaxBufferPoolSize = Int32.MaxValue;
+                        ((BasicHttpBinding)binding).ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
                         break;
                 }
             }
@@ -467,8 +468,15 @@ namespace WCFLoad
                 // Keep a list of each contract's endpoints.
                 if (suite != null)
                 {
+                    if (suite.EndpointsForContracts == null)
+                        suite.EndpointsForContracts = new Dictionary<string, List<EndpointsForContractsClass>>();
                     suite.EndpointsForContracts[contract.Name] =
-                        allEndpoints.Where(ep => ep.Contract.Name == contract.Name).ToList();
+                        allEndpoints.Where(ep => ep.Contract.Name == contract.Name)
+                            .Select(ep => new EndpointsForContractsClass()
+                            {
+                                Uri = ep.Address.Uri.ToString(),
+                                Binding = ep.Binding
+                            }).ToList();
                 }
             }
 

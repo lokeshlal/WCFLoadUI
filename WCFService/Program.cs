@@ -38,6 +38,12 @@ namespace WCFService
 
             Test.TestPackage = ServiceClient.GetTestPackage();
 
+            Test.TestPackage.Clients = Test.TestPackage.Clients / Test.TestPackage.Nodes.NodeList.Count;
+            if (Test.TestPackage.Clients == 0)
+            {
+                Test.TestPackage.Clients = 1;
+            }
+
             //generate proxy
             foreach (var suite in Test.TestPackage.Suites)
             {
