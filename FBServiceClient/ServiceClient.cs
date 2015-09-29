@@ -41,7 +41,7 @@ namespace FBServiceClient
                     ((ICommunicationObject)client).Abort();
                 }
 
-                throw new Exception("Failed during service call--", ex);
+                throw new Exception("Failed during service call--" + ex.InnerException.Message, ex);
             }
             return returnObj;
         }
@@ -56,6 +56,15 @@ namespace FBServiceClient
                     Message = new MessageSecurityOverTcp {ClientCredentialType = MessageCredentialType.None}
                 }
             };
+
+            myBinding.MaxConnections = 1000;
+            myBinding.MaxReceivedMessageSize = Int32.MaxValue;
+            myBinding.MaxBufferSize = Int32.MaxValue;
+            myBinding.MaxBufferPoolSize = Int32.MaxValue;
+            myBinding.ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
+            myBinding.SendTimeout = new TimeSpan(0, 0, 1, 0);
+            myBinding.ReceiveTimeout = new TimeSpan(0, 0, 1, 0);
+            myBinding.OpenTimeout = new TimeSpan(0, 0, 1, 0);
 
             var myEndpoint =
                 new EndpointAddress(string.Format("net.tcp://{0}:{1}/fbservice", ServerIpAddress, ServerPort));

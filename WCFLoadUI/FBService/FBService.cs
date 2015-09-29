@@ -50,9 +50,11 @@ namespace WCFLoadUI.FBService
         {
             //Add client to started clients collection
             ApplicationData.TotalClientsStarted++;
+            //serialize not working on ServiceEndpoint
+            //commented below code and now reduce no of clients in agent
             Package testPackage = (Package)TestHelper.Deserialize(TestHelper.Serialize(Test.TestPackage), Test.TestPackage.GetType());
-            testPackage.Clients = testPackage.Clients / testPackage.Nodes.NodeList.Count;
-            return testPackage;
+            //testPackage.Clients = testPackage.Clients / testPackage.Nodes.NodeList.Count;
+            return testPackage; //Test.TestPackage;
         }
 
         /// <summary>

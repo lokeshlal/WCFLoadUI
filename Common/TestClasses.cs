@@ -11,6 +11,11 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.ServiceModel.Description;
+using System.Runtime.Serialization;
+using System.ServiceModel;
+using System.ServiceModel.Channels;
+using System.Xml.Serialization;
 
 //Classes to hold performance test
 
@@ -289,17 +294,44 @@ namespace Common
         #endregion
     }
 
+    //[KnownType(typeof(Binding))]
+    //[KnownType(typeof(BasicHttpBinding))]
+    //[KnownType(typeof(WSHttpBinding))]
+    //[KnownType(typeof(WebHttpBinding))]
+    //[KnownType(typeof(NetHttpBinding))]
+    //[KnownType(typeof(WS2007HttpBinding))]
+    //[KnownType(typeof(WS2007FederationHttpBinding))]
+    //[KnownType(typeof(WSDualHttpBinding))]
+    //[KnownType(typeof(NetHttpsBinding))]
+    //[KnownType(typeof(NetTcpBinding))]
+    //[KnownType(typeof(NetMsmqBinding))]
+    //[KnownType(typeof(NetNamedPipeBinding))]
+    //[KnownType(typeof(System.Text.UTF8Encoding))]
+    //[KnownType(typeof(System.Text.DecoderExceptionFallback))]
+    //[KnownType(typeof(System.Text.EncoderExceptionFallback))]
+    //[KnownType(typeof(System.ServiceModel.Security.Basic256SecurityAlgorithmSuite))]
+    //[KnownType(typeof(System.ServiceModel.OleTransactionsProtocol))]
 
+    public class EndpointsForContractsClass
+    {
+        public Binding Binding { get; set; }
+        public string Uri { get; set; }
+    }
 
     [Serializable]
-    public class TestSuite
+    public class TestSuite //: ISerializable
     {
-        public Dictionary<string, string> EndPoints = new Dictionary<string, string>();
+        [NonSerialized]
+        private Dictionary<string, List<EndpointsForContractsClass>> _endpointsForContracts;
 
         public TestSuite()
         {
             FunctionalTests = new List<Test>();
             Tests = new List<Test>();
+            //EndpointsForContracts = new Dictionary<string, List<ServiceEndpoint>>();
+            _endpointsForContracts = new Dictionary<string, List<EndpointsForContractsClass>>();
+            EndPointType = new Dictionary<string, string>();
+            EndPoints = new Dictionary<string, string>();
         }
         public string Guid { get; set; }
         public List<Test> Tests { get; set; }
@@ -309,6 +341,49 @@ namespace Common
         public string ServiceUrl { get; set; }
         public string Configuration { get; set; }
         public string BindingToTest { get; set; }
+        public Dictionary<string, string> EndPoints { get; set; }
+        public Dictionary<string, string> EndPointType { get; set; }
+        //public Dictionary<string, List<ServiceEndpoint>> EndpointsForContracts { get; set; }
+        [IgnoreDataMember]
+        public Dictionary<string, List<EndpointsForContractsClass>> EndpointsForContracts
+        {
+            get
+            {
+                return _endpointsForContracts;
+            }
+            set { _endpointsForContracts = value; }
+        }
+
+        public TestSuite(SerializationInfo info, StreamingContext context)
+        {
+            EndPoints = (Dictionary<string, string>)info.GetValue("EndPoints", typeof(Dictionary<string, string>));
+            EndPointType = (Dictionary<string, string>)info.GetValue("EndPointType", typeof(Dictionary<string, string>));
+            //EndpointsForContracts = (Dictionary<string, List<ServiceEndpoint>>)info.GetValue("EndpointsForContracts", typeof(Dictionary<string, List<ServiceEndpoint>>));
+            EndpointsForContracts = (Dictionary<string, List<EndpointsForContractsClass>>)info.GetValue("EndpointsForContracts", typeof(Dictionary<string, List<EndpointsForContractsClass>>));
+            Guid = (string)info.GetValue("Guid", typeof(string));
+            Tests = (List<Test>)info.GetValue("Tests", typeof(List<Test>));
+            FunctionalTests = (List<Test>)info.GetValue("FunctionalTests", typeof(List<Test>));
+            Wsdl = (string)info.GetValue("Wsdl", typeof(string));
+            BaseUrl = (string)info.GetValue("BaseUrl", typeof(string));
+            ServiceUrl = (string)info.GetValue("ServiceUrl", typeof(string));
+            Configuration = (string)info.GetValue("Configuration", typeof(string));
+            BindingToTest = (string)info.GetValue("BindingToTest", typeof(string));
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("EndPoints", EndPoints);
+            info.AddValue("EndPointType", EndPointType);
+            //info.AddValue("EndpointsForContracts", EndpointsForContracts);
+            info.AddValue("Guid", Guid);
+            info.AddValue("Tests", Tests);
+            info.AddValue("FunctionalTests", FunctionalTests);
+            info.AddValue("Wsdl", Wsdl);
+            info.AddValue("BaseUrl", BaseUrl);
+            info.AddValue("ServiceUrl", ServiceUrl);
+            info.AddValue("Configuration", Configuration);
+            info.AddValue("BindingToTest", BindingToTest);
+        }
     }
 
     [Serializable]

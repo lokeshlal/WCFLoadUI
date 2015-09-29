@@ -45,6 +45,16 @@ namespace WCFLoadUI.FBService
                     }
                 };
 
+                binding.MaxConnections = 9999999;
+                binding.MaxReceivedMessageSize = Int32.MaxValue;
+                binding.MaxBufferSize = Int32.MaxValue;
+                binding.MaxBufferPoolSize = Int32.MaxValue;
+                binding.ReaderQuotas.MaxStringContentLength = Int32.MaxValue;
+                binding.SendTimeout = new TimeSpan(0, 0, 1, 0);
+                binding.ReceiveTimeout = new TimeSpan(0, 0, 1, 0);
+                binding.OpenTimeout = new TimeSpan(0, 0, 1, 0);
+
+
                 Uri tcpBaseAddress = new Uri("net.tcp://localhost:9090/fbservice");
                 _host = new ServiceHost(typeof(FbService), tcpBaseAddress);
                 _host.AddServiceEndpoint(typeof(IFbService), binding, "");
