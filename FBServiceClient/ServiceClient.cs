@@ -1,11 +1,12 @@
-﻿#region File Information/History
+#region File Information/History
 // <copyright file="ServiceClient.cs" project="FBServiceClient" >
 // Copyright (c) 2015 All Rights Reserved
 // </copyright>
-// <author>Lokesh Lal</author>
+// <author>Lokesh Lal/Amit Choudhary</author>
 // <date>08/19/2015</date>
 // <history>
 // 08/19/2015: Created - Lokesh Lal
+// 09/20/2015: Revised - Amit Choudhary
 // </history>
 #endregion
 using System;
@@ -15,45 +16,112 @@ using Common.FBService;
 
 namespace FBServiceClient
 {
-    public class ServiceClient
+    /// <summary>
+    /// Class providing service client method invocation facility. 
+    /// <remarks>
+    /// TODO: Use IFbService as marker interface. Incase IFbservice method changes in future. 
+    /// </remarks>
+    /// </summary>
+    public sealed class ServiceClient // : IFbService
     {
+        /// <summary>
+        /// Private constructor to prevent instance creation of this class.
+        /// </summary>
+        private ServiceClient() { }
+
         public static string ServerIpAddress = string.Empty;
         public static string ServerPort = string.Empty;
 
         public static Package GetTestPackage()
         {
-            Package returnObj;
+            return InvokeWcfOperation<Package>((clientProxy) =>
+            {
+                return clientProxy.GetTestPackage();
+            });
+        }
+
+        public static void Done()
+        {
+            InvokeWcfOperation((clientProxy) => {
+                clientProxy.Done();
+            });
+        }
+
+        public static void InsertNewMethodLog(string methodName, string token)
+        {
+            InvokeWcfOperation((clientProxy) => {
+                clientProxy.InsertNewMethodLog(methodName, token);
+            });
+        }
+
+        public static void UpdateMethodLog(string token, string methodName, MethodStatus status, long? timeTaken = null,
+            string error = null)
+        {
+            InvokeWcfOperation((clientProxy) => 
+            {
+                clientProxy.UpdateMethodLog(token, methodName, status, timeTaken,
+                    error + " - From " + Environment.MachineName);
+            });
+        }
+
+        /// <summary>
+        /// Invoke void operation on IFbService client.
+        /// </summary>
+        /// <param name="operation"></param>
+        private static void InvokeWcfOperation(Action<IFbService> operation)
+        {
+            // invoke other overload to avoid duplication.
+            InvokeWcfOperation<object>((clientProxy) =>
+            {
+                operation(clientProxy);
+                return null;
+            });
+        }
+
+        /// <summary>
+        /// Invoke operation with returning values on IFbservice client.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="operation"></param>
+        /// <returns></returns>
+        private static T InvokeWcfOperation<T>(Func<IFbService, T> operation) where T: class
+        {
+            T returnValue = null;
             IFbService client = null;
-            var myChannelFactory = GetClient();
 
             try
             {
-                client = myChannelFactory.CreateChannel();
-                returnObj = client.GetTestPackage();
-                // ReSharper disable once SuspiciousTypeConversion.Global
-                ((ICommunicationObject) client).Close();
+                client = GetClientFactory().CreateChannel();
+
+                returnValue = operation(client);
+
+                ((ICommunicationObject)client).Close();
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
+                // Log exception with injected logger. 
+                // TODO: Open an interface for logging.
                 if (client != null)
                 {
-                    // ReSharper disable once SuspiciousTypeConversion.Global
                     ((ICommunicationObject)client).Abort();
                 }
-
-                throw new Exception("Failed during service call--" + ex.InnerException.Message, ex);
             }
-            return returnObj;
+
+            return returnValue;
         }
 
-        private static ChannelFactory<IFbService> GetClient()
+        /// <summary>
+        /// Factory method for IFbService channel.
+        /// </summary>
+        /// <returns>Channel factory of type IFbService</returns>
+        private static ChannelFactory<IFbService> GetClientFactory()
         {
             var myBinding = new NetTcpBinding
             {
                 Security = new NetTcpSecurity
                 {
                     Mode = SecurityMode.None,
-                    Message = new MessageSecurityOverTcp {ClientCredentialType = MessageCredentialType.None}
+                    Message = new MessageSecurityOverTcp { ClientCredentialType = MessageCredentialType.None }
                 }
             };
 
@@ -68,75 +136,8 @@ namespace FBServiceClient
 
             var myEndpoint =
                 new EndpointAddress(string.Format("net.tcp://{0}:{1}/fbservice", ServerIpAddress, ServerPort));
+
             return new ChannelFactory<IFbService>(myBinding, myEndpoint);
-        }
-
-        public static void Done()
-        {
-            IFbService client = null;
-            var myChannelFactory = GetClient();
-
-            try
-            {
-                client = myChannelFactory.CreateChannel();
-                client.Done();
-                // ReSharper disable once SuspiciousTypeConversion.Global
-                ((ICommunicationObject)client).Close();
-            }
-            catch
-            {
-                if (client != null)
-                {
-                    // ReSharper disable once SuspiciousTypeConversion.Global
-                    ((ICommunicationObject)client).Abort();
-                }
-            }
-        }
-
-        public static void InsertNewMethodLog(string methodName, string token)
-        {
-            IFbService client = null;
-            var myChannelFactory = GetClient();
-
-            try
-            {
-                client = myChannelFactory.CreateChannel();
-                client.InsertNewMethodLog(methodName, token);
-                // ReSharper disable once SuspiciousTypeConversion.Global
-                ((ICommunicationObject)client).Close();
-            }
-            catch
-            {
-                if (client != null)
-                {
-                    // ReSharper disable once SuspiciousTypeConversion.Global
-                    ((ICommunicationObject)client).Abort();
-                }
-            }
-        }
-
-        public static void UpdateMethodLog(string token, string methodName, MethodStatus status, long? timeTaken = null,
-            string error = null)
-        {
-            IFbService client = null;
-            var myChannelFactory = GetClient();
-
-            try
-            {
-                client = myChannelFactory.CreateChannel();
-                client.UpdateMethodLog(token, methodName, status, timeTaken,
-                    error + " - From " + Environment.MachineName);
-                // ReSharper disable once SuspiciousTypeConversion.Global
-                ((ICommunicationObject)client).Close();
-            }
-            catch
-            {
-                if (client != null)
-                {
-                    // ReSharper disable once SuspiciousTypeConversion.Global
-                    ((ICommunicationObject)client).Abort();
-                }
-            }
         }
     }
 }
