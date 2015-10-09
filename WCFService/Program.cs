@@ -17,10 +17,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common;
-using FBServiceClient;
+using Common.Infrastructure.Entities;
+using WCFLoad.FbServiceClient;
 using WCFLoad.Helper;
 using WCFLoad.Tokens;
-using Test = WCFLoad.Test;
+using Test = WCFLoad.TestEngine;
 
 namespace WCFService
 {
@@ -120,7 +121,7 @@ namespace WCFService
                                 int suiteNumberToExecute = r.Next(0, Test.TestPackage.Suites.Count - 1);
                                 int testNumberToExecute = r.Next(0,
                                     Test.TestPackage.Suites[suiteNumberToExecute].Tests.Count - 1);
-                                Common.Test testToExecute =
+                                Common.Infrastructure.Entities.Test testToExecute =
                                     Test.TestPackage.Suites[suiteNumberToExecute].Tests[testNumberToExecute];
                                 Test.InvokeTest(testToExecute, Test.TestPackage.Suites[suiteNumberToExecute].Guid);
                                 requestSent++;
@@ -164,7 +165,7 @@ namespace WCFService
                                           where tt.Service.MethodName == methodName
                                                 && ss.AssemblyGuid == suite.Guid
                                           select tt;
-                                Common.Test testToExecute = tts.ElementAt(0);
+                                Common.Infrastructure.Entities.Test testToExecute = tts.ElementAt(0);
 
                                 var valueToUse = (from v in testToExecute.Service.Values.ValueList
                                                   where v.Guid == ss.MethodGuid

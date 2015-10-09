@@ -99,7 +99,7 @@ namespace WCFLoadUI.ViewModels
         {
             base.OnViewLoaded(view);
             CanViewResult = false;
-            Test.ClearResultHandler();
+            TestEngine.ClearResultHandler();
             TestResultList = new ObservableCollection<FunctionalTestResults>();
             Controller.FunctionalTestUpdated += Controller_FunctionalTestUpdated;
             Controller.InvokeAllFunctionTest();

@@ -15,8 +15,9 @@ using System.Linq;
 using System.Windows;
 using Common;
 using WCFLoadUI.Base;
-using Test = WCFLoad.Test;
+using Test = WCFLoad.TestEngine;
 using WCFLoadUI.TypeToBind;
+using Common.Infrastructure.Entities;
 
 namespace WCFLoadUI.ViewModels
 {

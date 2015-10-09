@@ -10,10 +10,11 @@
 #endregion
 using System.Threading.Tasks;
 using Common;
-using Common.FBService;
 using WCFLoad.Helper;
-using Test = WCFLoad.Test;
+using Test = WCFLoad.TestEngine;
 using WCFLoadUI.Common;
+using Common.FBServiceContracts;
+using Common.Infrastructure.Entities;
 
 namespace WCFLoadUI.FBService
 {

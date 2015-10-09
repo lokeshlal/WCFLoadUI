@@ -76,7 +76,7 @@ namespace WCFLoadUI.ViewModels
                     return;
                 }
                 _noOfClientsPerNode = value;
-                Test.TestPackage.Nodes.NoOfClientsPerNode = _noOfClientsPerNode;
+                TestEngine.TestPackage.Nodes.NoOfClientsPerNode = _noOfClientsPerNode;
                 NotifyOfPropertyChange(() => NoOfClientsPerNode);
             }
         }
@@ -91,15 +91,15 @@ namespace WCFLoadUI.ViewModels
         protected override void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
-            Nodes = new ObservableCollection<string>(Test.TestPackage.Nodes.NodeList);
+            Nodes = new ObservableCollection<string>(TestEngine.TestPackage.Nodes.NodeList);
 
-            if (Test.TestPackage.Nodes.NoOfClientsPerNode > 0)
+            if (TestEngine.TestPackage.Nodes.NoOfClientsPerNode > 0)
             {
-                NoOfClientsPerNode = Test.TestPackage.Nodes.NoOfClientsPerNode;
+                NoOfClientsPerNode = TestEngine.TestPackage.Nodes.NoOfClientsPerNode;
             }
             else
             {
-                NoOfClientsPerNode = Test.TestPackage.Nodes.NoOfClientsPerNode = 1;
+                NoOfClientsPerNode = TestEngine.TestPackage.Nodes.NoOfClientsPerNode = 1;
             }
         }
         #endregion
@@ -114,8 +114,8 @@ namespace WCFLoadUI.ViewModels
             {
                 if (!Nodes.Contains(NewNode))
                 {
-                    Test.TestPackage.Nodes.NodeList.Add(NewNode);
-                    Nodes = new ObservableCollection<string>(Test.TestPackage.Nodes.NodeList);
+                    TestEngine.TestPackage.Nodes.NodeList.Add(NewNode);
+                    Nodes = new ObservableCollection<string>(TestEngine.TestPackage.Nodes.NodeList);
                 }
             }
 
@@ -129,8 +129,8 @@ namespace WCFLoadUI.ViewModels
         {
             if (!string.IsNullOrEmpty(SelectedNode))
             {
-                Test.TestPackage.Nodes.NodeList.Remove(SelectedNode);
-                Nodes = new ObservableCollection<string>(Test.TestPackage.Nodes.NodeList);
+                TestEngine.TestPackage.Nodes.NodeList.Remove(SelectedNode);
+                Nodes = new ObservableCollection<string>(TestEngine.TestPackage.Nodes.NodeList);
             }
         }
         #endregion

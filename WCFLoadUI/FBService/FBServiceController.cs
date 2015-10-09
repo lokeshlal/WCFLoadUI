@@ -13,8 +13,9 @@ using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Common;
-using Common.FBService;
+using WCFLoad.FbServiceClient;
 using WCFLoadUI.Common;
+using Common.FBServiceContracts;
 
 namespace WCFLoadUI.FBService
 {
@@ -86,7 +87,7 @@ namespace WCFLoadUI.FBService
                     _host.Close();
                     _isStarted = !_isStarted;
                     _host = null;
-                    Task.Factory.StartNew(WCFLoad.Test.CallRunResultUpdatedEvent);
+                    Task.Factory.StartNew(WCFLoad.TestEngine.CallRunResultUpdatedEvent);
                 }
                 else
                 {

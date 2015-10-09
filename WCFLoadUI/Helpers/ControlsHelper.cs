@@ -19,7 +19,8 @@ using Common;
 using WCFLoad.Helper;
 using WCFLoadUI.TypeToBind;
 using WCFLoadUI.ViewModels;
-using Test = WCFLoad.Test;
+using Test = WCFLoad.TestEngine;
+using Common.Infrastructure.Entities;
 
 // ReSharper disable RedundantNameQualifier
 

@@ -20,7 +20,8 @@ using WCFLoadUI.ApplicationController;
 using WCFLoadUI.Base;
 using WCFLoadUI.Helpers;
 using WCFLoadUI.TypeToBind;
-using Test = WCFLoad.Test;
+using Test = WCFLoad.TestEngine;
+using Common.Infrastructure.Entities;
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace WCFLoadUI.ViewModels
@@ -450,7 +451,7 @@ namespace WCFLoadUI.ViewModels
                 //set method output
                 valueNode.MethodOutput = MethodOutput;
 
-                global::Common.Test newTest = new global::Common.Test();
+                global::Common.Infrastructure.Entities.Test newTest = new global::Common.Infrastructure.Entities.Test();
                 var testNodes = (from s in Test.TestPackage.Suites
                                  from test in s.FunctionalTests
                                  where test.Service.MethodName == SelectedMethodName
@@ -575,7 +576,7 @@ namespace WCFLoadUI.ViewModels
         {
             try
             {
-                global::Common.Test newTest = new global::Common.Test();
+                global::Common.Infrastructure.Entities.Test newTest = new global::Common.Infrastructure.Entities.Test();
 
                 var valueNode = ControlsHelper.GetParameterValueFromControlViewList(ControlViewBindingObject);
 

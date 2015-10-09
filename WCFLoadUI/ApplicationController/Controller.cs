@@ -24,7 +24,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Common;
-using FBServiceClient;
+using WCFLoad.FbServiceClient;
 using WCFLoad.Helper;
 using WCFLoad.Tokens;
 using WCFLoadUI.Distributed;
@@ -33,6 +33,7 @@ using WCFLoadUI.Helpers;
 using WCFLoadUI.TypeToBind;
 using WCFLoadUI.ViewModels;
 using WCFLoadUI.Common;
+using Common.Infrastructure.Entities;
 
 namespace WCFLoadUI.ApplicationController
 {
@@ -128,17 +129,17 @@ namespace WCFLoadUI.ApplicationController
             {
                 if (serviceUrl == "AddARest")
                 {
-                    WCFLoad.Test.Clear();
+                    WCFLoad.TestEngine.Clear();
                     guid = "AddARest";
                     return null;
                 }
                 else
                 {
-                    WCFLoad.Test.Clear();
+                    WCFLoad.TestEngine.Clear();
                     Guid g = Guid.NewGuid();
                     guid = g.ToString();
-                    WCFLoad.Test.GenerateProxyAssembly(serviceUrl, g.ToString(), true);
-                    return WCFLoad.Test.GetAllServiceMethods(g.ToString());
+                    WCFLoad.TestEngine.GenerateProxyAssembly(serviceUrl, g.ToString(), true);
+                    return WCFLoad.TestEngine.GetAllServiceMethods(g.ToString());
                 }
             }
             guid = string.Empty;
@@ -154,7 +155,7 @@ namespace WCFLoadUI.ApplicationController
             string serviceUrl = Convert.ToString(DialogHelper.ShowDialog<ServiceUrlViewModel>(propertyName, isAddARestEnabled));
             if (!string.IsNullOrEmpty(serviceUrl))
             {
-                if (WCFLoad.Test.TestPackage.Suites.FindAll(s => s.ServiceUrl.ToLower() == serviceUrl.ToLower()).Any())
+                if (WCFLoad.TestEngine.TestPackage.Suites.FindAll(s => s.ServiceUrl.ToLower() == serviceUrl.ToLower()).Any())
                 {
                     MessageBox.Show("Url already present in the project");
                 }
@@ -162,8 +163,8 @@ namespace WCFLoadUI.ApplicationController
                 {
                     Guid g = Guid.NewGuid();
                     guid = g.ToString();
-                    WCFLoad.Test.GenerateProxyAssembly(serviceUrl, g.ToString(), true);
-                    return WCFLoad.Test.GetAllServiceMethods(g.ToString());
+                    WCFLoad.TestEngine.GenerateProxyAssembly(serviceUrl, g.ToString(), true);
+                    return WCFLoad.TestEngine.GetAllServiceMethods(g.ToString());
                 }
             }
             guid = string.Empty;
@@ -208,7 +209,7 @@ namespace WCFLoadUI.ApplicationController
         /// <returns></returns>
         public static List<string> GetServiceMethods(string guid)
         {
-            return WCFLoad.Test.GetAllServiceMethods(guid);
+            return WCFLoad.TestEngine.GetAllServiceMethods(guid);
         }
 
         /// <summary>
@@ -221,7 +222,7 @@ namespace WCFLoadUI.ApplicationController
         /// <returns>returns actual output after execution</returns>
         public static string InvokeFunctionalTest(Test t, int index, string guid, out string input)
         {
-            return WCFLoad.Test.InvokeFunctionalTest(t, index, guid, out input);
+            return WCFLoad.TestEngine.InvokeFunctionalTest(t, index, guid, out input);
         }
 
         /// <summary>
@@ -234,7 +235,7 @@ namespace WCFLoadUI.ApplicationController
             Task.Factory.StartNew(() =>
             {
                 int ii;
-                foreach (var t in WCFLoad.Test.TestPackage.Suites.SelectMany(s => s.FunctionalTests))
+                foreach (var t in WCFLoad.TestEngine.TestPackage.Suites.SelectMany(s => s.FunctionalTests))
                 {
                     for (ii = 0; ii < t.Service.Values.ValueList.Count; ii++)
                     {
@@ -248,7 +249,7 @@ namespace WCFLoadUI.ApplicationController
                     }
                 }
                 ii = 0;
-                foreach (var t in WCFLoad.Test.TestPackage.RestMethods.FindAll(r => r.IsAddedToFunctional))
+                foreach (var t in WCFLoad.TestEngine.TestPackage.RestMethods.FindAll(r => r.IsAddedToFunctional))
                 {
                     FunctionalTestResults.Add(new FunctionalTestResults
                     {
@@ -265,7 +266,7 @@ namespace WCFLoadUI.ApplicationController
                     FunctionalTestUpdated(null, null);
                 }
                 int ij;
-                foreach (var s in WCFLoad.Test.TestPackage.Suites)
+                foreach (var s in WCFLoad.TestEngine.TestPackage.Suites)
                 {
                     foreach (var t in s.FunctionalTests)
                     {
@@ -301,7 +302,7 @@ namespace WCFLoadUI.ApplicationController
                     }
                 }
                 ij = 0;
-                foreach (var t in WCFLoad.Test.TestPackage.RestMethods.FindAll(r => r.IsAddedToFunctional))
+                foreach (var t in WCFLoad.TestEngine.TestPackage.RestMethods.FindAll(r => r.IsAddedToFunctional))
                 {
                     var ftrObj = (from ftr in FunctionalTestResults
                                   where ftr.MethodName == t.Url
@@ -314,7 +315,7 @@ namespace WCFLoadUI.ApplicationController
                     {
                         FunctionalTestUpdated(null, null);
                     }
-                    RestMethodResponse result = WCFLoad.Test.InvokeRestApi(t, false);
+                    RestMethodResponse result = WCFLoad.TestEngine.InvokeRestApi(t, false);
 
                     bool passfailstatus = result.Response == t.MethodOutput;
 
@@ -346,11 +347,11 @@ namespace WCFLoadUI.ApplicationController
         /// </summary>
         public static List<string> LoadXmlFileAndGetAllMethods(string filePath)
         {
-            WCFLoad.Test.Clear();
-            WCFLoad.Test.LoadTest(filePath);
+            WCFLoad.TestEngine.Clear();
+            WCFLoad.TestEngine.LoadTest(filePath);
             //Get guid of first service
-            if (WCFLoad.Test.TestPackage.Suites.Count > 0)
-                return WCFLoad.Test.GetAllServiceMethods(WCFLoad.Test.TestPackage.Suites[0].Guid);
+            if (WCFLoad.TestEngine.TestPackage.Suites.Count > 0)
+                return WCFLoad.TestEngine.GetAllServiceMethods(WCFLoad.TestEngine.TestPackage.Suites[0].Guid);
             return new List<string>();
         }
 
@@ -362,12 +363,12 @@ namespace WCFLoadUI.ApplicationController
         /// <returns>ParameterInfo array</returns>
         public static ParameterInfo[] GetMethodParameters(string methodName, string guid)
         {
-            return WCFLoad.Test.GetMethodParameters(methodName, guid);
+            return WCFLoad.TestEngine.GetMethodParameters(methodName, guid);
         }
 
         public static Type GetBaseTypeFromCurrentAssembly(string typeName, string guid)
         {
-            return WCFLoad.Test.GetBaseTypeFromCurrentAssembly(typeName, guid);
+            return WCFLoad.TestEngine.GetBaseTypeFromCurrentAssembly(typeName, guid);
         }
 
         /// <summary>
@@ -388,9 +389,9 @@ namespace WCFLoadUI.ApplicationController
         /// </summary>
         public static void RunTest()
         {
-            WCFLoad.Test.MethodLevelResults = new ConcurrentDictionary<string, MethodLogs>();
-            WCFLoad.Test.MethodLevelReqStatus = new ConcurrentDictionary<string, MethodLogs>();
-            WCFLoad.Test.ClearCache();
+            WCFLoad.TestEngine.MethodLevelResults = new ConcurrentDictionary<string, MethodLogs>();
+            WCFLoad.TestEngine.MethodLevelReqStatus = new ConcurrentDictionary<string, MethodLogs>();
+            WCFLoad.TestEngine.ClearCache();
 
             //Reset total clients
             ApplicationData.TotalClientsStarted = 0;
@@ -406,25 +407,25 @@ namespace WCFLoadUI.ApplicationController
             ServiceClient.ServerIpAddress = "localhost";
             ServiceClient.ServerPort = "9090";
 
-            WCFLoad.Test.PerformanceRunToken = CancellationTokens.GetPerformanceCancellationToken();
+            WCFLoad.TestEngine.PerformanceRunToken = CancellationTokens.GetPerformanceCancellationToken();
 
-            if (!string.IsNullOrEmpty(WCFLoad.Test.TestPackage.ResultFileName))
+            if (!string.IsNullOrEmpty(WCFLoad.TestEngine.TestPackage.ResultFileName))
             {
-                if (File.Exists(WCFLoad.Test.TestPackage.ResultFileName))
+                if (File.Exists(WCFLoad.TestEngine.TestPackage.ResultFileName))
                 {
-                    File.Delete(WCFLoad.Test.TestPackage.ResultFileName);
+                    File.Delete(WCFLoad.TestEngine.TestPackage.ResultFileName);
                 }
             }
 
             IsTestCompleted = false;
 
-            int scenariosCount = WCFLoad.Test.TestPackage.Scenarios.Count;
+            int scenariosCount = WCFLoad.TestEngine.TestPackage.Scenarios.Count;
 
-            int duration = WCFLoad.Test.TestPackage.Duration;
-            int clients = WCFLoad.Test.TestPackage.Clients;
-            if (WCFLoad.Test.TestPackage.Nodes.NodeList.Count > 0)
+            int duration = WCFLoad.TestEngine.TestPackage.Duration;
+            int clients = WCFLoad.TestEngine.TestPackage.Clients;
+            if (WCFLoad.TestEngine.TestPackage.Nodes.NodeList.Count > 0)
             {
-                clients = WCFLoad.Test.TestPackage.Clients / WCFLoad.Test.TestPackage.Nodes.NodeList.Count;
+                clients = WCFLoad.TestEngine.TestPackage.Clients / WCFLoad.TestEngine.TestPackage.Nodes.NodeList.Count;
             }
 
             Stopwatch testDurationTimer = new Stopwatch();
@@ -433,8 +434,8 @@ namespace WCFLoadUI.ApplicationController
 
             int requestSent = 0;
 
-            int delayRangeStart = WCFLoad.Test.TestPackage.DelayRangeStart;
-            int delayRangeEnd = WCFLoad.Test.TestPackage.DelayRangeEnd;
+            int delayRangeStart = WCFLoad.TestEngine.TestPackage.DelayRangeStart;
+            int delayRangeEnd = WCFLoad.TestEngine.TestPackage.DelayRangeEnd;
 
             int clientsSpawned = 0;
 
@@ -455,27 +456,27 @@ namespace WCFLoadUI.ApplicationController
                             Random r = new Random();
                             bool executeWcf = r.Next(0, 1000) % 2 == 0;
 
-                            if (WCFLoad.Test.TestPackage.Suites.Count == 0)
+                            if (WCFLoad.TestEngine.TestPackage.Suites.Count == 0)
                                 executeWcf = false;
 
-                            if (executeWcf || WCFLoad.Test.TestPackage.RestMethods.Count == 0)
+                            if (executeWcf || WCFLoad.TestEngine.TestPackage.RestMethods.Count == 0)
                             {
-                                int suiteNumberToExecute = r.Next(0, WCFLoad.Test.TestPackage.Suites.Count - 1);
+                                int suiteNumberToExecute = r.Next(0, WCFLoad.TestEngine.TestPackage.Suites.Count - 1);
                                 int testNumberToExecute = r.Next(0,
-                                    WCFLoad.Test.TestPackage.Suites[suiteNumberToExecute].Tests.Count - 1);
+                                    WCFLoad.TestEngine.TestPackage.Suites[suiteNumberToExecute].Tests.Count - 1);
                                 var testToExecute =
-                                    WCFLoad.Test.TestPackage.Suites[suiteNumberToExecute].Tests[testNumberToExecute];
-                                WCFLoad.Test.InvokeTest(testToExecute,
-                                    WCFLoad.Test.TestPackage.Suites[suiteNumberToExecute].Guid);
+                                    WCFLoad.TestEngine.TestPackage.Suites[suiteNumberToExecute].Tests[testNumberToExecute];
+                                WCFLoad.TestEngine.InvokeTest(testToExecute,
+                                    WCFLoad.TestEngine.TestPackage.Suites[suiteNumberToExecute].Guid);
                                 requestSent++;
                             }
                             else
                             {
-                                int suiteNumberToExecute = r.Next(0, WCFLoad.Test.TestPackage.RestMethods.Count - 1);
+                                int suiteNumberToExecute = r.Next(0, WCFLoad.TestEngine.TestPackage.RestMethods.Count - 1);
                                 Task.Factory.StartNew(() =>
                                 {
-                                    WCFLoad.Test.InvokeRestApi(
-                                        WCFLoad.Test.TestPackage.RestMethods[suiteNumberToExecute], true);
+                                    WCFLoad.TestEngine.InvokeRestApi(
+                                        WCFLoad.TestEngine.TestPackage.RestMethods[suiteNumberToExecute], true);
                                 });
                             }
                             requestSent++;
@@ -489,7 +490,7 @@ namespace WCFLoadUI.ApplicationController
                                 Random r = new Random();
                                 currentScenario = r.Next(0, scenariosCount - 1);
                             }
-                            var scen = WCFLoad.Test.TestPackage.Scenarios[currentScenario];
+                            var scen = WCFLoad.TestEngine.TestPackage.Scenarios[currentScenario];
 
                             if (currentScenarioOrder == -1)
                             {
@@ -506,7 +507,7 @@ namespace WCFLoadUI.ApplicationController
                             {
                                 var methodName = ss.MethodName;
 
-                                var tts = from suite in WCFLoad.Test.TestPackage.Suites
+                                var tts = from suite in WCFLoad.TestEngine.TestPackage.Suites
                                           from tt in suite.Tests
                                           where tt.Service.MethodName == methodName
                                                 && ss.AssemblyGuid == suite.Guid
@@ -517,14 +518,14 @@ namespace WCFLoadUI.ApplicationController
                                                   where v.Guid == ss.MethodGuid
                                                   select v).First();
 
-                                WCFLoad.Test.InvokeTest(testToExecute, ss.AssemblyGuid, valueToUse);
+                                WCFLoad.TestEngine.InvokeTest(testToExecute, ss.AssemblyGuid, valueToUse);
                             }
                             else
                             {
                                 Task.Factory.StartNew(() =>
                                 {
-                                    WCFLoad.Test.InvokeRestApi(
-                                        WCFLoad.Test.TestPackage.RestMethods.Find(r => r.Guid == ss.MethodGuid), true);
+                                    WCFLoad.TestEngine.InvokeRestApi(
+                                        WCFLoad.TestEngine.TestPackage.RestMethods.Find(r => r.Guid == ss.MethodGuid), true);
                                 });
                             }
                             requestSent++;
@@ -536,7 +537,7 @@ namespace WCFLoadUI.ApplicationController
                             {
                                 currentScenarioOrder = -1;
                                 currentScenario = -1;
-                                Thread.Sleep(WCFLoad.Test.TestPackage.IntervalBetweenScenarios);
+                                Thread.Sleep(WCFLoad.TestEngine.TestPackage.IntervalBetweenScenarios);
                             }
                         }
                     }
@@ -549,7 +550,7 @@ namespace WCFLoadUI.ApplicationController
             {
                 //Wait for all client threads to complete
                 Task.WaitAll(clientTasks);
-                SpinWait.SpinUntil(() => (requestSent == WCFLoad.Test.TotalResponsesRecieved), 60000);
+                SpinWait.SpinUntil(() => (requestSent == WCFLoad.TestEngine.TotalResponsesRecieved), 60000);
             }
             catch (AggregateException ae)
             {
@@ -560,7 +561,7 @@ namespace WCFLoadUI.ApplicationController
                 }
             }
             IsTestCompleted = true;
-            WCFLoad.Test.CallRunResultUpdatedEvent();
+            WCFLoad.TestEngine.CallRunResultUpdatedEvent();
             FbServiceController.StopService();
         }
     }

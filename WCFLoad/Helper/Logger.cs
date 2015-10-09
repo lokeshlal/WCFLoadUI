@@ -32,7 +32,7 @@ namespace WCFLoad.Helper
         /// </summary>
         private static void WriteLogsToFile()
         {
-            StreamWriter log = new StreamWriter(Test.TestPackage.ResultFileName, true);
+            StreamWriter log = new StreamWriter(TestEngine.TestPackage.ResultFileName, true);
             // ReSharper disable once InconsistentlySynchronizedField
             log.Write(string.Join(Environment.NewLine, _logs.ToArray()));
             //Clear inmemory logs

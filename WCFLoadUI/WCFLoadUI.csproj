@@ -267,10 +267,6 @@
       <Project>{0fb0d7b2-28eb-47b8-bfb7-4575f77e18cb}</Project>
       <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\FBServiceClient\FBServiceClient.csproj">
-      <Project>{cb8fbda4-8957-4835-9f22-30facf46505b}</Project>
-      <Name>FBServiceClient</Name>
-    </ProjectReference>
     <ProjectReference Include="..\WCFLoad\WCFLoad.csproj">
       <Project>{e89c6dcb-2182-4e02-bbe3-35aff6ac9e21}</Project>
       <Name>WCFLoad</Name>

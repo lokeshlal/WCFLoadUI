@@ -55,9 +55,9 @@ namespace WCFLoadUI.Distributed
         /// </summary>
         public static void CreateClientAgents()
         {
-            Parallel.ForEach(Test.TestPackage.Nodes.NodeList, node =>
+            Parallel.ForEach(TestEngine.TestPackage.Nodes.NodeList, node =>
             {
-                for (int i = 0; i < Test.TestPackage.Nodes.NoOfClientsPerNode; i++)
+                for (int i = 0; i < TestEngine.TestPackage.Nodes.NoOfClientsPerNode; i++)
                 {
                     string clientNumber = i.ToString();
                     //copy exe and other files to client location and start the exe
@@ -97,7 +97,7 @@ namespace WCFLoadUI.Distributed
 
         public static void TerminateRemoteProcess()
         {
-            Parallel.ForEach(Test.TestPackage.Nodes.NodeList, node =>
+            Parallel.ForEach(TestEngine.TestPackage.Nodes.NodeList, node =>
             {
                 string remoteServerName = node;
                 ConnectionOptions connectionOptions = new ConnectionOptions();

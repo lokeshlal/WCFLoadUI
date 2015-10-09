@@ -13,6 +13,7 @@ using System.Data;
 using System.IO;
 using Common;
 using FirebirdSql.Data.FirebirdClient;
+using Common.Infrastructure.Entities;
 
 
 

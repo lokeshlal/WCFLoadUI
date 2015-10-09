@@ -17,6 +17,7 @@ using Common;
 using WCFLoadUI.ApplicationController;
 using WCFLoadUI.Base;
 using WCFLoadUI.TypeToBind;
+using Common.Infrastructure.Entities;
 
 namespace WCFLoadUI.ViewModels
 {

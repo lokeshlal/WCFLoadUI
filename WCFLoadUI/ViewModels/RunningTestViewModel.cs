@@ -121,8 +121,8 @@ namespace WCFLoadUI.ViewModels
             base.OnViewLoaded(view);
             CanViewResult = false;
             _computeCycle = 0;
-            Test.ClearResultHandler();
-            Test.RunResultUpdated += Test_RunResultUpdated;
+            TestEngine.ClearResultHandler();
+            TestEngine.RunResultUpdated += Test_RunResultUpdated;
 
         }
 
@@ -174,7 +174,7 @@ namespace WCFLoadUI.ViewModels
 
         public void ViewResultFile()
         {
-            string resultFileName = Test.TestPackage.ResultFileName;
+            string resultFileName = TestEngine.TestPackage.ResultFileName;
             if (!_isResultFileAvailable)
             {
                 StreamWriter log = new StreamWriter(resultFileName, true);

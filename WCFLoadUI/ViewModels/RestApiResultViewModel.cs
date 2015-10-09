@@ -31,7 +31,7 @@ namespace WCFLoadUI.ViewModels
             Response = response;
             Guid = guid;
             _isAddedToFunctionalTestCase =
-                WCFLoad.Test.TestPackage.RestMethods.Find(r => r.Guid == guid).IsAddedToFunctional;
+                WCFLoad.TestEngine.TestPackage.RestMethods.Find(r => r.Guid == guid).IsAddedToFunctional;
         }
         #endregion
 
@@ -89,8 +89,8 @@ namespace WCFLoadUI.ViewModels
 
         public void AddFunctional()
         {
-            WCFLoad.Test.TestPackage.RestMethods.Find(r => r.Guid == Guid).IsAddedToFunctional = true;
-            WCFLoad.Test.TestPackage.RestMethods.Find(r => r.Guid == Guid).MethodOutput = Response;
+            WCFLoad.TestEngine.TestPackage.RestMethods.Find(r => r.Guid == Guid).IsAddedToFunctional = true;
+            WCFLoad.TestEngine.TestPackage.RestMethods.Find(r => r.Guid == Guid).MethodOutput = Response;
             _isAddedToFunctionalTestCase = !_isAddedToFunctionalTestCase;
             UpdateButtons();
         }
@@ -103,8 +103,8 @@ namespace WCFLoadUI.ViewModels
 
         public void RemoveFunctional()
         {
-            WCFLoad.Test.TestPackage.RestMethods.Find(r => r.Guid == Guid).IsAddedToFunctional = false;
-            WCFLoad.Test.TestPackage.RestMethods.Find(r => r.Guid == Guid).MethodOutput = string.Empty;
+            WCFLoad.TestEngine.TestPackage.RestMethods.Find(r => r.Guid == Guid).IsAddedToFunctional = false;
+            WCFLoad.TestEngine.TestPackage.RestMethods.Find(r => r.Guid == Guid).MethodOutput = string.Empty;
             _isAddedToFunctionalTestCase = !_isAddedToFunctionalTestCase;
             UpdateButtons();
         }

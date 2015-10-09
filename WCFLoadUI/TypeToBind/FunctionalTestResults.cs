@@ -9,6 +9,7 @@
 // </history>
 #endregion
 using Common;
+using Common.Infrastructure.Entities;
 
 namespace WCFLoadUI.TypeToBind
 {
