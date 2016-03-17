@@ -704,7 +704,7 @@ namespace WCFLoadUI.ViewModels
         {
             CancellationTokens.ResetPerformanceCancellationToken();
             CancellationTokens.GetPerformanceCancellationToken();
-
+            
             //run program on server
             Task.Factory.StartNew(Controller.RunTest);
             Controller.ShowRunningTestViewDialog();

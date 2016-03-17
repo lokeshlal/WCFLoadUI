@@ -121,6 +121,7 @@ namespace WCFLoadUI.ViewModels
             base.OnViewLoaded(view);
             CanViewResult = false;
             _computeCycle = 0;
+            Test.now = DateTime.Now;
             Test.ClearResultHandler();
             Test.RunResultUpdated += Test_RunResultUpdated;
 

@@ -58,6 +58,7 @@ namespace WCFLoad
         private static CancellationTokenSource _performanceRunTokenSource;
         private static CancellationToken _performanceRunToken;
         private static int _eventCount = -1;
+        public static DateTime now = DateTime.Now;
         #endregion
 
         #region public properties
@@ -141,8 +142,10 @@ namespace WCFLoad
         /// <param name="error">Error if any</param>
         private static void UpdateMethodLog(string token, string methodName, MethodStatus status, long? timeTaken = null, string error = null)
         {
-            if (EventCount > 100 || EventCount == -1)
+            DateTime _now = DateTime.Now;
+            if (EventCount > 100 || EventCount == -1 || _now.Subtract(now).Seconds > 2)
             {
+                now = _now;
                 EventCount = 0;
                 if (RunResultUpdated != null)
                 {
