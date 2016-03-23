@@ -63,6 +63,11 @@ namespace WCFLoad.Helper
                     return null;
                 }
             }
+            else if(typeToCast == typeof(Guid))
+            {
+                return new Guid(value);
+            }
+
             object safeValue = string.IsNullOrEmpty(value) ? null : Convert.ChangeType(value, typeToCast);
             return safeValue;
         }
